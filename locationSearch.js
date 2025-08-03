@@ -18,28 +18,37 @@ export function locationSearch(input)
     inputstring = input;
     if (inputstring.length > 0) 
     {
-        // Simulate a search operation
+        // Ask for the search input
         console.log("Searching for locations related to: " + inputstring);
+        // Check to see if the input matches any portion of the example locations
         let results = exampleLocations.filter(location =>  
             location.toLowerCase().includes(inputstring.toLowerCase())
         );
+        // If a full result is found, display them
         if (results.length > 0) 
         {
             console.log("Search results found: " + results.join(", "));
-        } else 
+        } 
+        // If no results are found, check for partial matches
+        else 
         {
             let partialResults = exampleLocations.filter(location => 
                 location.toLowerCase().includes(inputstring.toLowerCase())
             );
+            // If partial results are found, display them
             if (partialResults.length > 0) 
             {
                 console.log("Partial matches found: " + partialResults.join(", "));
-            } else 
+            } 
+            // No matches found (partial or full)
+            else 
             {
                 console.log("No matches found for: " + inputstring);
             }
         }
-    } else 
+    } 
+    // If no input is provided, prompt the user to enter a location
+    else 
     {
         console.log("Please enter a location.");
     }
