@@ -1,5 +1,5 @@
 // flight-search-location.js - handles flight search functionality
-import {locationSearch} from "../shared code/util/locationSearch.js";
+import {locationSearch} from "../shared-code/util/locationSearch.js";
 
 // variables to store user's departure and arrival choice
 let departureLocation, arrivalLocation;
@@ -45,7 +45,7 @@ const flightSearchResults = () => {
     locationSearch(arrivalLocation);
 
     // load flight data from csv file
-    fetch("../shared code/data/flight-data.csv")
+    fetch("../shared-code/data/flight-data.csv")
         .then(response => response.text())
         .then(data => {
             // array to store flights that match search criteria

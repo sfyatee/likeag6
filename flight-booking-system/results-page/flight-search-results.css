@@ -1,7 +1,7 @@
 /* Font import for LEMONMILK-REGULAR */
 @font-face {
     font-family: 'LEMONMILK';
-    src: url('../shared code/assets/LEMONMILK-Regular.ttf') format('truetype');
+    src: url('../shared-code/assets/LEMONMILK-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }

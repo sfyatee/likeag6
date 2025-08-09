@@ -1,5 +1,5 @@
 //import seat gen from k'yahn
-import { generateSeats } from '../shared code/util/SeatGen.js';
+import { generateSeats } from '../shared-code/util/SeatGen.js';
 
 // array to store seats that have been selected
 let selectedSeats = [];
@@ -123,10 +123,10 @@ function displayFlights() {
         <div class="flight-info">
             <h3>American Airlines - FL1001</h3>
             <p>LAX → JFK | 08:00 | 5h 30m</p>
-            
+
             <button id="seatBtn" onclick="showSeats()">Select Seats</button>
             ${createSeatMap()}
-            
+
             <button id="continueBtn" onclick="goToCheckout()" disabled>Continue to Checkout</button>
         </div>
     `;
