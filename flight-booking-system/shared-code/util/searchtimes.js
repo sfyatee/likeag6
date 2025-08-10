@@ -1,4 +1,4 @@
-const hourSelect = document.getElementById("arrival-hour");
+const hourSelect = document.getElementById("departureHour");
 for (let i = 0; i < 24; i++) {
     const option = document.createElement("option");
     option.value = i;
@@ -16,18 +16,18 @@ function randomPrice() {
 }
 
 function swapLocations() {
-    const from = document.getElementById("from-location");
-    const to = document.getElementById("to-location");
+    const from = document.getElementById("departure");
+    const to = document.getElementById("arrival");
     const temp = from.value;
     from.value = to.value;
     to.value = temp;
 }
 
 function showFlightTimes() {
-    const hour = parseInt(document.getElementById("arrival-hour").value);
-    const date = document.getElementById("arrival-date").value;
-    const from = document.getElementById("from-location").value || "Unknown";
-    const to = document.getElementById("to-location").value || "Unknown";
+    const hour = parseInt(document.getElementById("departureHour").value);
+    const date = document.getElementById("departureDate").value;
+    const from = document.getElementById("departure").value || "Unknown";
+    const to = document.getElementById("arrival").value || "Unknown";
 
     if (!date) {
         alert("Please select a date.");
@@ -62,9 +62,9 @@ function viewDetails(from, to, date, time, price) {
     );
 }
 
-document.getElementById("arrival-date").addEventListener("keydown", function (e) {
+document.getElementById("departureDate").addEventListener("keydown", function (e) {
     if (e.key === "Enter") showFlightTimes();
 });
-document.getElementById("arrival-hour").addEventListener("keydown", function (e) {
+document.getElementById("departureHour").addEventListener("keydown", function (e) {
     if (e.key === "Enter") showFlightTimes();
 });
