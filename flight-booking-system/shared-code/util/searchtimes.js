@@ -1,9 +1,12 @@
+// Populate hour dropdown
 const hourSelect = document.getElementById("departureHour");
-for (let i = 0; i < 24; i++) {
-    const option = document.createElement("option");
-    option.value = i;
-    option.textContent = i.toString().padStart(2, '0') + ":00";
-    hourSelect.appendChild(option);
+if (hourSelect) {
+    for (let i = 0; i < 24; i++) {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = i.toString().padStart(2, '0') + ":00";
+        hourSelect.appendChild(option);
+    }
 }
 
 function FlightTime(hour) {
@@ -18,23 +21,32 @@ function randomPrice() {
 function swapLocations() {
     const from = document.getElementById("departure");
     const to = document.getElementById("arrival");
-    const temp = from.value;
-    from.value = to.value;
-    to.value = temp;
+    if (from && to) {
+        const temp = from.value;
+        from.value = to.value;
+        to.value = temp;
+    }
 }
 
+// Save data before redirecting
+function recordSearch() {
+    const from = document.getElementById("departure")?.value || "";
+    const to = document.getElementById("arrival")?.value || "";
+    const date = document.getElementById("departureDate")?.value || "";
+    const hour = document.getElementById("departureHour")?.value || "";
+
+    const searchData = { from, to, date, hour };
+    localStorage.setItem("searchData", JSON.stringify(searchData));
+}
+
+// Use data from localStorage (for results page)
 function showFlightTimes() {
-    const hour = parseInt(document.getElementById("departureHour").value);
-    const date = document.getElementById("departureDate").value;
-    const from = document.getElementById("departure").value || "Unknown";
-    const to = document.getElementById("arrival").value || "Unknown";
-
-    if (!date) {
-        alert("Please select a date.");
-        return;
-    }
-
     const container = document.getElementById("flight-times");
+    if (!container) return;
+
+    const searchData = JSON.parse(localStorage.getItem("searchData") || "{}");
+    const { from = "Origin", to = "Destination", date = "Unknown", hour = 12 } = searchData;
+
     container.innerHTML = ""; // Clear old results
 
     for (let i = 0; i < 10; i++) {
@@ -53,18 +65,20 @@ function showFlightTimes() {
 
 function viewDetails(from, to, date, time, price) {
     alert(
-        `Flight Details:\n` +
-        `From: ${from}\n` +
-        `To: ${to}\n` +
-        `Date: ${date}\n` +
-        `Time: ${time}\n` +
+        `Flight Details:\\n` +
+        `From: ${from}\\n` +
+        `To: ${to}\\n` +
+        `Date: ${date}\\n` +
+        `Time: ${time}\\n` +
         `Price: $${price}`
     );
 }
 
-document.getElementById("departureDate").addEventListener("keydown", function (e) {
+// Optional: trigger on Enter if inputs exist
+document.getElementById("departureDate")?.addEventListener("keydown", function (e) {
     if (e.key === "Enter") showFlightTimes();
 });
-document.getElementById("departureHour").addEventListener("keydown", function (e) {
+document.getElementById("departureHour")?.addEventListener("keydown", function (e) {
     if (e.key === "Enter") showFlightTimes();
 });
+

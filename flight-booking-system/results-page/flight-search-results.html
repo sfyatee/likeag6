@@ -2,11 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Search Results</title>
-    <script type="module" src="seat-selection.js"></script>
+    <title>Flight Search Results</title>
     <link rel="stylesheet" href="flight-search-results.css">
+
+    <!-- Load search logic -->
+    <script src="../shared-code/util/searchtimes.js" defer></script>
+
+    <!-- Call the showFlightTimes AFTER DOM and JS load -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Ensure the function exists before calling
+            if (typeof showFlightTimes === "function") {
+                showFlightTimes();
+            } else {
+                console.error("showFlightTimes not available.");
+                const fallback = document.getElementById("flight-times");
+                if (fallback) {
+                    fallback.innerHTML = "<p style='color:red;'>Flight search failed. Please go back and try again.</p>";
+                }
+            }
+        });
+    </script>
 </head>
 <body>
-<h1 id="searchFlights"></h1>
+    <h1>Available Flights</h1>
+
+    <!-- Container for rendering search results -->
+    <div id="flight-times" style="margin-top: 20px; padding: 10px;">
+        <p>Loading flights...</p>
+    </div>
 </body>
 </html>
+

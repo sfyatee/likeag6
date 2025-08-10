@@ -43,9 +43,20 @@
             </div>
 
             <!-- Search Flight button -->
-            <button id="searchButton" class="layout-search-button" onclick="showFlightTimes()">
-                Search <br> Flight
+            <button id="searchButton" class="layout-search-button">
+               Search <br> Flight
             </button>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const btn = document.getElementById("searchButton");
+        if (btn) {
+            btn.addEventListener("click", () => {
+                recordSearch();
+                window.location.href = "../results-page/flight-search-results.html";
+            });
+        }
+    });
+	</script>
         </div>
     </div>
 
