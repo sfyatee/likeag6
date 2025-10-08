@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>G6Labs — Matrix Calculator</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <aside id="panel">
+    <h1>G6Labs — Matrix Calculator</h1>
+    <div class="sub">Choose sizes, enter values, and compute <b>Add</b>, <b>Subtract</b>, or <b>Multiply</b>. Steps appear on the right as proper matrices.</div>
+
+    <!-- Sizes -->
+    <div class="card">
+      <div class="header-row">
+        <div>
+          <div class="title-sm">Matrix Sizes</div>
+          <div class="muted">Adjust A and B dimensions</div>
+        </div>
+        <button id="clearAll" class="ghost">Clear All</button>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Matrix A size (rows × cols)</label>
+          <div class="row">
+            <input id="aRows" type="number" min="1" step="1" value="2"/>
+            <input id="aCols" type="number" min="1" step="1" value="2"/>
+          </div>
+        </div>
+        <div>
+          <label>Matrix B size (rows × cols)</label>
+          <div class="row">
+            <input id="bRows" type="number" min="1" step="1" value="2"/>
+            <input id="bCols" type="number" min="1" step="1" value="2"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Matrix A -->
+    <div class="card">
+      <div class="header-row">
+        <div class="title-sm">Matrix A</div>
+        <div class="toolbar">
+          <button id="aZeros" class="ghost">Zeros</button>
+          <button id="aOnes" class="ghost">Ones</button>
+          <button id="aIdentity" class="ghost">Identity</button>
+          <button id="aRandom" class="ghost">Random</button>
+        </div>
+      </div>
+      <div id="A" class="matrix-grid"></div>
+    </div>
+
+    <!-- Matrix B -->
+    <div class="card">
+      <div class="header-row">
+        <div class="title-sm">Matrix B</div>
+        <div class="toolbar">
+          <button id="bZeros" class="ghost">Zeros</button>
+          <button id="bOnes" class="ghost">Ones</button>
+          <button id="bIdentity" class="ghost">Identity</button>
+          <button id="bRandom" class="ghost">Random</button>
+        </div>
+      </div>
+      <div id="B" class="matrix-grid"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card">
+      <div class="row">
+        <button id="btnAdd" class="primary">A + B</button>
+        <button id="btnSub" class="primary">A − B</button>
+      </div>
+      <div class="row">
+        <button id="btnMul" class="primary">A × B</button>
+        <button id="swapAB" class="ghost">Swap A ↔ B</button>
+      </div>
+      <div id="compat" class="hint muted"></div>
+      <div id="opError" class="error-text"></div>
+    </div>
+
+    <!-- Result (for quick copy) -->
+    <div class="card">
+      <div class="header-row">
+        <div>
+          <div class="title-sm">Result</div>
+          <div class="muted">Computed matrix</div>
+        </div>
+        <div class="toolbar">
+          <button id="copyResult" class="ghost">Copy JSON</button>
+        </div>
+      </div>
+      <div id="Result" class="matrix-grid"></div>
+    </div>
+
+    <div class="muted">v0.6 • Calculator • Matrix-formatted steps</div>
+  </aside>
+
+  <!-- RIGHT SIDE: live steps / derivation -->
+  <main id="right">
+    <div id="rightWrap" class="right-wrap">
+      <div class="right-header">
+        <div>
+          <div class="right-title">Matrix Operations — Steps</div>
+          <div class="right-sub muted">After you run an operation, the derivation appears here.</div>
+        </div>
+        <button id="copySteps" class="ghost">Copy Steps</button>
+      </div>
+
+      <div id="derivation" class="derivation">
+        <div class="empty-title">Matrix Operations</div>
+        <div class="empty-text">Enter sizes and values for A and B on the left. Choose an operation and the step-by-step explanation will show up here.</div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="/static/script.js"></script>
+</body>
+</html>
