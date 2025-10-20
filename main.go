@@ -212,9 +212,18 @@ func main() {
 	fs := http.FileServer(http.Dir(frontendDir))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	// Front page
+	landingPage := filepath.Join(frontendDir, "index.html")
+	calcPage := filepath.Join(frontendDir, "matrixCalc.html")
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, filepath.Join(frontendDir, "index.html"))
+		switch r.URL.Path {
+		case "/":
+			http.ServeFile(w, r, landingPage)
+		case "/matrixCalc":
+			http.ServeFile(w, r, calcPage)
+		default:
+			http.NotFound(w, r)
+		}
 	})
 
 	// API routes
