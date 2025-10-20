@@ -1,121 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>G6Labs — Matrix Calculator</title>
-  <link rel="stylesheet" href="/static/style.css" />
-</head>
-<body>
-  <aside id="panel">
-    <h1>G6Labs — Matrix Calculator</h1>
-    <div class="sub">Choose sizes, enter values, and compute <b>Add</b>, <b>Subtract</b>, or <b>Multiply</b>. Steps appear on the right as proper matrices.</div>
-
-    <!-- Sizes -->
-    <div class="card">
-      <div class="header-row">
-        <div>
-          <div class="title-sm">Matrix Sizes</div>
-          <div class="muted">Adjust A and B dimensions</div>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/static/globals.css" />
+    <link rel="stylesheet" href="/static/styleguide.css" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="/static/index.js" defer></script>
+  </head>
+  <body>
+    <div class="landing-page" data-model-id="1:902">
+      <div class="navigation-header">
+        <div class="png">
+          <img class="likeaglogo-png" src="https://c.animaapp.com/UosP7fum/img/likeag6logo-png@2x.png" />
         </div>
-        <button id="clearAll" class="ghost">Clear All</button>
-      </div>
-
-      <div class="row">
-        <div>
-          <label>Matrix A size (rows × cols)</label>
-          <div class="row">
-            <input id="aRows" type="number" min="1" step="1" value="2"/>
-            <input id="aCols" type="number" min="1" step="1" value="2"/>
+        <div class="assistance-button">
+          <div class="rectangle"></div>
+          <div class="text-wrapper-15">Assistance</div>
+          <img class="img-4" src="https://c.animaapp.com/UosP7fum/img/search-icon.svg" />
+        </div>
+        <div class="graphing-button">
+          <div class="rectangle-2"></div>
+          <div class="text-wrapper-15">Graphing</div>
+          <img class="img-5" src="https://c.animaapp.com/UosP7fum/img/graph-icon.svg" />
+        </div>
+        <div class="calculator-button">
+          <div class="rectangle"></div>
+          <div class="text-wrapper-15">Calculator</div>
+          <img class="img-5" src="https://c.animaapp.com/UosP7fum/img/calculator-icon.svg" />
+        </div>
+        <button class="login-button-button">
+          <div class="rectangle"></div>
+          <div class="login-text">Login</div>
+          <img class="img-4" src="https://c.animaapp.com/UosP7fum/img/user-icon.svg" />
+        </button>
+        <div class="search-bar">
+          <div class="search-bar-2">
+            <img class="message-question" src="https://c.animaapp.com/UosP7fum/img/message-question.svg" />
+            <div class="text-wrapper-16">Search...</div>
+            <img class="x" src="https://c.animaapp.com/UosP7fum/img/x.svg" />
           </div>
         </div>
-        <div>
-          <label>Matrix B size (rows × cols)</label>
-          <div class="row">
-            <input id="bRows" type="number" min="1" step="1" value="2"/>
-            <input id="bCols" type="number" min="1" step="1" value="2"/>
+      </div>
+      <p class="main-section-header">G6Labs, An Easy Way to Learn Linear Algebra</p>
+      <div class="problem-assistance">
+        <img class="img-3" src="https://c.animaapp.com/UosP7fum/img/note-2.svg" />
+        <div class="div-wrapper">
+          <p class="div-3">
+            <span class="text-wrapper-12">Problem Assistance<br /></span>
+            <span class="text-wrapper-13"><br /></span>
+            <span class="text-wrapper-14">Step-by-Step problem <br />solving solutions to common problems</span>
+          </p>
+        </div>
+      </div>
+      <div class="graphing">
+        <img class="img-3" src="https://c.animaapp.com/UosP7fum/img/3d-rotate.svg" />
+        <div class="div-wrapper">
+          <p class="p">
+            <span class="text-wrapper-12">Graphing<br /></span>
+            <span class="text-wrapper-13"><br /></span>
+            <span class="text-wrapper-14">View and manipulate 2D/2D Models for visual learners</span>
+          </p>
+        </div>
+      </div>
+      <div class="calculator">
+        <img class="math" src="https://c.animaapp.com/UosP7fum/img/math.svg" />
+        <div class="practice-problems-wrapper">
+          <p class="practice-problems-2">
+            <span class="text-wrapper-12">Calculator<br /></span>
+            <span class="text-wrapper-13"><br /></span>
+            <span class="text-wrapper-14">Input your own fields for <br />custom matrix operations</span>
+          </p>
+        </div>
+      </div>
+      <div class="practice-problems">
+        <img class="img-3" src="https://c.animaapp.com/UosP7fum/img/ranking.svg" />
+        <div class="div-wrapper">
+          <p class="div-3">
+            <span class="text-wrapper-12">Practice Problems<br /></span>
+            <span class="text-wrapper-13"><br /></span>
+            <span class="text-wrapper-14">Improve your skills by completing curated <br />worksheets</span>
+          </p>
+        </div>
+      </div>
+      <div class="alternatives">
+        <img class="img-3" src="https://c.animaapp.com/UosP7fum/img/share.svg" />
+        <div class="div-wrapper">
+          <p class="alt-resources-text">
+            <span class="text-wrapper-12">Alternative Resources<br /></span>
+            <span class="text-wrapper-13"><br /></span>
+            <span class="text-wrapper-14">Review videos, articles, and other supplementary information</span>
+          </p>
+        </div>
+      </div>
+      <div class="dashboard">
+        <img class="vuesax-bulk-crown" src="https://c.animaapp.com/UosP7fum/img/vuesax-bulk-crown@2x.png" />
+        <div class="dashboard-frame">
+          <p class="p">
+            <span class="text-wrapper-12">Dashboard<br /></span>
+            <span class="text-wrapper-13"><br /></span>
+            <span class="text-wrapper-14">Customize your learning and personalize your account</span>
+          </p>
+        </div>
+      </div>
+      <p class="resources-section">Explore More Resources Coming Soon</p>
+      <div class="carousel">
+        <img class="arrow-circle-left" src="https://c.animaapp.com/UosP7fum/img/arrow-circle-left.svg" />
+        <img
+          class="vuesax-twotone-arrow"
+          src="https://c.animaapp.com/UosP7fum/img/vuesax-twotone-arrow-circle-right@2x.png"
+        />
+        <div class="carousel-viewport">
+          <div class="resources-carousel">
+          <div class="journal">
+            <img class="img-2" src="https://c.animaapp.com/UosP7fum/img/journal-icon.svg" />
+            <div class="journal-text">Journal</div>
+          </div>
+          <div class="friends">
+            <img class="friends-icon" src="https://c.animaapp.com/UosP7fum/img/friends-icon.svg" />
+            <div class="text-wrapper-10">Study with <br />Friends</div>
+          </div>
+          <div class="practice-exam">
+            <img class="img-2" src="https://c.animaapp.com/UosP7fum/img/practice-exam-icon.svg" />
+            <div class="text-wrapper-10">Practice Exam</div>
+          </div>
+          <div class="calculus">
+            <img class="img-2" src="https://c.animaapp.com/UosP7fum/img/vuesax-outline-book@2x.png" />
+            <div class="calculus-text">Calculus</div>
+          </div>
+          <div class="journal-2">
+            <img class="star" src="https://c.animaapp.com/UosP7fum/img/star@2x.png" />
+            <div class="text-wrapper-11">Customize</div>
+          </div>
+          </div>
+        </div>
+
+        <div class="dots">
+          <div class="ellipse"></div>
+          <div class="ellipse-2"></div>
+          <div class="ellipse-2"></div>
+        </div>
+      </div>
+      <div class="about-us-section">About Us</div>
+      <div class="dev-cards">
+        <div class="alfredo-s-card">
+          <p class="text-wrapper-7">We can't wait for users to try out G6Labs!</p>
+          <div class="avatar">
+            <img class="img" src="https://c.animaapp.com/UosP7fum/img/avatar@2x.png" />
+            <div class="frame">
+              <div class="text-wrapper-8">Alfredo Catzin</div>
+              <div class="text-wrapper-9">Frontend Developer</div>
+            </div>
+          </div>
+        </div>
+        <div class="div-2">
+          <p class="text-wrapper-7">We hope you enjoy using G6Labs!</p>
+          <div class="avatar">
+            <img class="img" src="https://c.animaapp.com/UosP7fum/img/avatar-1.svg" />
+            <div class="frame">
+              <div class="text-wrapper-8">Minas Papazyan</div>
+              <div class="text-wrapper-9">Backend Developer</div>
+            </div>
+          </div>
+        </div>
+        <div class="div-2">
+          <p class="text-wrapper-7">Take a look at our interactive 3D visualizers!</p>
+          <div class="avatar">
+            <img class="img" src="https://c.animaapp.com/UosP7fum/img/avatar-2.svg" />
+            <div class="frame">
+              <div class="text-wrapper-8">Demian Garcia</div>
+              <div class="text-wrapper-9">Backend Developer</div>
+            </div>
+          </div>
+        </div>
+        <div class="andrew-s-card">
+          <div class="text-wrapper-7">"A genuinely glowing review"</div>
+          <div class="avatar">
+            <img class="img" src="https://c.animaapp.com/UosP7fum/img/avatar-3.svg" />
+            <div class="frame">
+              <div class="text-wrapper-8">Andrew Shin</div>
+              <div class="text-wrapper-9">Description</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Matrix A -->
-    <div class="card">
-      <div class="header-row">
-        <div class="title-sm">Matrix A</div>
-        <div class="toolbar">
-          <button id="aZeros" class="ghost">Zeros</button>
-          <button id="aOnes" class="ghost">Ones</button>
-          <button id="aIdentity" class="ghost">Identity</button>
-          <button id="aRandom" class="ghost">Random</button>
+      <p class="at-our">
+        <span class="span"
+          >At G6Labs, our mission is to make Linear Algebra more accessible, engaging, and intuitive for learners of all
+          skill levels. We combine interactive 2D and 3D visual models, intelligent problem-solving tools, and
+          step-by-step calculations to help students truly understand the "why" behind mathematical concepts. Our team's
+          goal is not simply just to teach mathematics, but to transform the experience, empowering students to explore,
+          visualize, and improve through interaction and discovery.<br
+        /></span>
+        <span class="text-wrapper-6"><br /><br /><br /></span>
+        <span class="span">likeag6 Dev Team</span>
+      </p>
+      <footer class="footer">
+        <div class="buttons">
+          <div class="review-button"><div class="text-wrapper-3">Review</div></div>
+          <div class="feedback-button"><div class="text-wrapper-4">Feedback</div></div>
         </div>
-      </div>
-      <div id="A" class="matrix-grid"></div>
-    </div>
-
-    <!-- Matrix B -->
-    <div class="card">
-      <div class="header-row">
-        <div class="title-sm">Matrix B</div>
-        <div class="toolbar">
-          <button id="bZeros" class="ghost">Zeros</button>
-          <button id="bOnes" class="ghost">Ones</button>
-          <button id="bIdentity" class="ghost">Identity</button>
-          <button id="bRandom" class="ghost">Random</button>
+        <div class="text-wrapper-5">G6Labs</div>
+      </footer>
+      <div class="navigation-footer">
+        <div class="tools-footer">
+          <div class="text-wrapper">Tools</div>
+          <div class="div">Popular Problems</div>
+          <div class="div">Practice</div>
+          <div class="div">Page</div>
         </div>
-      </div>
-      <div id="B" class="matrix-grid"></div>
-    </div>
-
-    <!-- Actions -->
-    <div class="card">
-      <div class="row">
-        <button id="btnAdd" class="primary">A + B</button>
-        <button id="btnSub" class="primary">A − B</button>
-      </div>
-      <div class="row">
-        <button id="btnMul" class="primary">A × B</button>
-        <button id="swapAB" class="ghost">Swap A ↔ B</button>
-      </div>
-      <div id="compat" class="hint muted"></div>
-      <div id="opError" class="error-text"></div>
-    </div>
-
-    <!-- Result (for quick copy) -->
-    <div class="card">
-      <div class="header-row">
-        <div>
-          <div class="title-sm">Result</div>
-          <div class="muted">Computed matrix</div>
+        <div class="apps-footer">
+          <div class="text-wrapper">Apps</div>
+          <div class="div">Desktop</div>
+          <div class="div">Android</div>
+          <div class="div">iOS</div>
         </div>
-        <div class="toolbar">
-          <button id="copyResult" class="ghost">Copy JSON</button>
+        <div class="items-footer">
+          <div class="text-wrapper-2">Company</div>
+          <div class="div">Help</div>
+          <div class="div">Contact Us</div>
+          <div class="div">Blog</div>
         </div>
-      </div>
-      <div id="Result" class="matrix-grid"></div>
-    </div>
-
-    <div class="muted">v0.6 • Calculator • Matrix-formatted steps</div>
-  </aside>
-
-  <!-- RIGHT SIDE: live steps / derivation -->
-  <main id="right">
-    <div id="rightWrap" class="right-wrap">
-      <div class="right-header">
-        <div>
-          <div class="right-title">Matrix Operations — Steps</div>
-          <div class="right-sub muted">After you run an operation, the derivation appears here.</div>
-        </div>
-        <button id="copySteps" class="ghost">Copy Steps</button>
-      </div>
-
-      <div id="derivation" class="derivation">
-        <div class="empty-title">Matrix Operations</div>
-        <div class="empty-text">Enter sizes and values for A and B on the left. Choose an operation and the step-by-step explanation will show up here.</div>
+        <div class="element-com">6GLabs.com <br />likeag6<br />C490-16944</div>
+        <img class="social-icons" src="https://c.animaapp.com/UosP7fum/img/social-icons.svg" />
+        <img class="divider" src="https://c.animaapp.com/UosP7fum/img/divider.svg" />
       </div>
     </div>
-  </main>
-
-  <script type="module" src="/static/script.js"></script>
-</body>
+  </body>
 </html>
