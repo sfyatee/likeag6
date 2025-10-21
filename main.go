@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"os/exec"
 	"path/filepath"
@@ -35,6 +36,10 @@ type Matrix [][]float64
 type TwoMatrixRequest struct {
 	A Matrix `json:"A"`
 	B Matrix `json:"B"`
+}
+
+type OneMatrixRequest struct {
+	A Matrix `json:"A"`
 }
 
 type OneMatrixResponse struct {
@@ -137,7 +142,64 @@ func mul(A, B Matrix) (Matrix, error) {
 	return R, nil
 }
 
-// ---------- HTTP handlers ----------
+// rref performs Gauss-Jordan elimination with partial pivoting.
+func rref(A Matrix) (Matrix, error) {
+	if err := validateRect(A); err != nil {
+		return nil, err
+	}
+	r, c := dims(A)
+	M := make(Matrix, r)
+	for i := 0; i < r; i++ {
+		M[i] = make([]float64, c)
+		copy(M[i], A[i])
+	}
+
+	const eps = 1e-10
+	row := 0
+	for col := 0; col < c && row < r; col++ {
+		piv := row
+		maxAbs := math.Abs(M[piv][col])
+		for i := row + 1; i < r; i++ {
+			if v := math.Abs(M[i][col]); v > maxAbs {
+				maxAbs = v
+				piv = i
+			}
+		}
+		if maxAbs < eps {
+			continue
+		}
+		if piv != row {
+			M[piv], M[row] = M[row], M[piv]
+		}
+		p := M[row][col]
+		for j := col; j < c; j++ {
+			M[row][j] /= p
+		}
+		for i := 0; i < r; i++ {
+			if i == row {
+				continue
+			}
+			f := M[i][col]
+			if math.Abs(f) < eps {
+				continue
+			}
+			for j := col; j < c; j++ {
+				M[i][j] -= f * M[row][j]
+			}
+		}
+		row++
+	}
+	for i := 0; i < r; i++ {
+		for j := 0; j < c; j++ {
+			if math.Abs(M[i][j]) < 1e-12 {
+				M[i][j] = 0
+			}
+		}
+	}
+	return M, nil
+}
+
+// ---------- HTTP helpers ----------
 func writeJSON(w http.ResponseWriter, status int, payload any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
@@ -147,6 +209,16 @@ func writeJSON(w http.ResponseWriter, status int, payload any) {
 func parseTwoMatrixJSON(w http.ResponseWriter, r *http.Request) (*TwoMatrixRequest, bool) {
 	defer r.Body.Close()
 	var req TwoMatrixRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, OneMatrixResponse{Error: "invalid JSON: " + err.Error()})
+		return nil, false
+	}
+	return &req, true
+}
+
+func parseOneMatrixJSON(w http.ResponseWriter, r *http.Request) (*OneMatrixRequest, bool) {
+	defer r.Body.Close()
+	var req OneMatrixRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, OneMatrixResponse{Error: "invalid JSON: " + err.Error()})
 		return nil, false
@@ -205,10 +277,27 @@ func handleMul(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, OneMatrixResponse{Result: res})
 }
 
+func handleRREF(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		writeJSON(w, http.StatusMethodNotAllowed, OneMatrixResponse{Error: "use POST"})
+		return
+	}
+	req, ok := parseOneMatrixJSON(w, r)
+	if !ok {
+		return
+	}
+	res, err := rref(req.A)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, OneMatrixResponse{Error: err.Error()})
+		return
+	}
+	writeJSON(w, http.StatusOK, OneMatrixResponse{Result: res})
+}
+
 func main() {
+	// ✅ Serve from "frontend" folder (like your original setup)
 	frontendDir := "frontend"
 
-	// Static files (JS/CSS) under /static/
 	fs := http.FileServer(http.Dir(frontendDir))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
@@ -226,10 +315,10 @@ func main() {
 		}
 	})
 
-	// API routes
 	http.HandleFunc("/api/matrix/add", handleAdd)
 	http.HandleFunc("/api/matrix/subtract", handleSub)
 	http.HandleFunc("/api/matrix/multiply", handleMul)
+	http.HandleFunc("/api/matrix/rref", handleRREF)
 
 	port := 8080
 	url := fmt.Sprintf("http://localhost:%d", port)
