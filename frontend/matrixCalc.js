@@ -1,70 +1,84 @@
+/*
+likeag6/frontend/matrixCalc.js
 
-/* ==========
-   Elements
-========== */
-const aRows = document.getElementById('aRows');
-const aCols = document.getElementById('aCols');
-const bRows = document.getElementById('bRows');
-const bCols = document.getElementById('bCols');
-const Agrid = document.getElementById('A');
-const Bgrid = document.getElementById('B');
-const Rgrid = document.getElementById('Result');
-const opError = document.getElementById('opError');
-const compat = document.getElementById('compat');
-const derivation = document.getElementById('derivation');
-const copyStepsBtn = document.getElementById('copySteps');
-const copyResultBtn = document.getElementById('copyResult');
+Rewritten to prefer the gonum WebAssembly implementation (client-side).
+Falls back to HTTP API endpoints if WASM isn't available or fails.
 
-/* ==========
-   Fraction helpers
-========== */
-function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ const t=a%b; a=b; b=t; } return a||1; }
-function toFraction(x, maxDen=100, tol=1e-8){
+Behavior:
+- Loads a small wasm loader if available at /static/wasm/loader.js (optional).
+- Initializes window.wasmGonum (if that loader exists and initializes successfully).
+- For add/sub/mul/rref, calls WASM functions when possible; otherwise calls the HTTP API.
+- Keeps the client-side UI features (grids, fraction display, step rendering).
+*/
+
+//
+// Fraction helpers (for display)
+//
+function gcd(a, b) {
+  a = Math.abs(a);
+  b = Math.abs(b);
+  while (b) {
+    const t = a % b;
+    a = b;
+    b = t;
+  }
+  return a || 1;
+}
+function toFraction(x, maxDen = 100, tol = 1e-8) {
   if (!Number.isFinite(x)) return String(x);
-  const sign = x<0 ? -1 : 1;
+  const sign = x < 0 ? -1 : 1;
   x = Math.abs(x);
-  if (Math.abs(x - Math.round(x)) < tol) return String(sign*Math.round(x));
-  // Continued fraction
-  let h1=1, h0=0, k1=0, k0=1, b = x;
-  for(let i=0;i<50;i++){
+  if (Math.abs(x - Math.round(x)) < tol) return String(sign * Math.round(x));
+  let h1 = 1,
+    h0 = 0,
+    k1 = 0,
+    k0 = 1,
+    b = x;
+  for (let i = 0; i < 50; i++) {
     const a = Math.floor(b);
-    const h2 = a*h1 + h0;
-    const k2 = a*k1 + k0;
+    const h2 = a * h1 + h0;
+    const k2 = a * k1 + k0;
     if (k2 > maxDen) break;
     const approx = h2 / k2;
     if (Math.abs(approx - x) < tol) {
-      const num = sign*h2, den = k2;
-      const g = gcd(num,den);
-      return (den/g===1) ? String((num/g)) : `${num/g}/${den/g}`;
+      const num = sign * h2,
+        den = k2;
+      const g = gcd(num, den);
+      return den / g === 1 ? String(num / g) : `${num / g}/${den / g}`;
     }
-    h0=h1; k0=k1; h1=h2; k1=k2;
+    h0 = h1;
+    k0 = k1;
+    h1 = h2;
+    k1 = k2;
     const frac = b - a;
     if (frac === 0) break;
-    b = 1/frac;
+    b = 1 / frac;
   }
-  // Fallback: best current convergent within maxDen
-  const num = sign*h1, den = k1;
-  const g = gcd(num,den);
-  if (den/g <= maxDen) {
-    return (den/g===1) ? String((num/g)) : `${num/g}/${den/g}`;
-  }
-  const s = Number(sign*x).toFixed(6);
-  return s.replace(/\.?0+$/,'');
+  const num = sign * h1,
+    den = k1;
+  const g = gcd(num, den);
+  if (den / g <= maxDen)
+    return den / g === 1 ? String(num / g) : `${num / g}/${den / g}`;
+  return Number(sign * x)
+    .toFixed(6)
+    .replace(/\.?0+$/, "");
 }
-function strip(x){ return toFraction(Number(x)); }
+function strip(x) {
+  return toFraction(Number(x));
+}
 
-/* ==========
-   Grid utils
-========== */
-function buildGrid(container, rows, cols, fill = 0){
-  container.innerHTML = '';
+//
+// Grid helpers
+//
+function buildGrid(container, rows, cols, fill = 0) {
+  container.innerHTML = "";
   container.style.gridTemplateColumns = `repeat(${cols}, 80px)`;
   container.style.gridTemplateRows = `repeat(${rows}, auto)`;
-  for(let i=0;i<rows;i++){
-    for(let j=0;j<cols;j++){
-      const inp = document.createElement('input');
-      inp.type = 'number';
-      inp.step = '0.1';
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      const inp = document.createElement("input");
+      inp.type = "number";
+      inp.step = "0.1";
       inp.value = String(fill);
       inp.dataset.i = String(i);
       inp.dataset.j = String(j);
@@ -72,36 +86,41 @@ function buildGrid(container, rows, cols, fill = 0){
     }
   }
 }
-function writeMatrix(container, M){
-  const rows = M.length, cols = rows ? M[0].length : 0;
+
+function writeMatrix(container, M) {
+  const rows = M.length,
+    cols = rows ? M[0].length : 0;
   buildGrid(container, rows, cols, 0);
-  const inputs = container.querySelectorAll('input');
+  const inputs = container.querySelectorAll("input");
   let idx = 0;
-  for(let i=0;i<rows;i++){
-    for(let j=0;j<cols;j++){
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
       inputs[idx++].value = String(M[i][j]);
     }
   }
 }
-function readMatrix(container, rows, cols){
-  const M = Array.from({length: rows}, () => Array(cols).fill(0));
-  const inputs = container.querySelectorAll('input');
-  inputs.forEach(inp => {
+
+function readMatrix(container, rows, cols) {
+  const M = Array.from({ length: rows }, () => Array(cols).fill(0));
+  const inputs = container.querySelectorAll("input");
+  inputs.forEach((inp) => {
     const i = +inp.dataset.i;
     const j = +inp.dataset.j;
-    M[i][j] = parseFloat(inp.value || '0');
+    M[i][j] = parseFloat(inp.value || "0");
   });
   return M;
 }
-function showMatrix(container, M){
-  container.innerHTML = '';
-  const rows = M.length, cols = rows ? M[0].length : 0;
+
+function showMatrix(container, M) {
+  container.innerHTML = "";
+  const rows = M.length,
+    cols = rows ? M[0].length : 0;
   container.style.gridTemplateColumns = `repeat(${cols}, 80px)`;
   container.style.gridTemplateRows = `repeat(${rows}, auto)`;
-  for(let i=0;i<rows;i++){
-    for(let j=0;j<cols;j++){
-      const cell = document.createElement('input');
-      cell.type = 'text';
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      const cell = document.createElement("input");
+      cell.type = "text";
       cell.value = strip(M[i][j]);
       cell.readOnly = true;
       container.appendChild(cell);
@@ -109,142 +128,76 @@ function showMatrix(container, M){
   }
 }
 
-/* ==========
-   Build initial grids
-========== */
-function rebuildAllGrids(){
-  buildGrid(Agrid, +aRows.value, +aCols.value, 0);
-  buildGrid(Bgrid, +bRows.value, +bCols.value, 0);
-  Rgrid.innerHTML = '';
-  opError.textContent = '';
-  renderEmptyRight();
-  updateCompatibilityHint();
-}
-[aRows, aCols, bRows, bCols].forEach(el => el.addEventListener('input', rebuildAllGrids));
-rebuildAllGrids();
-
-/* ==========
-   Compatibility hint
-========== */
-function updateCompatibilityHint(){
-  const ar = +aRows.value, ac = +aCols.value;
-  const br = +bRows.value, bc = +bCols.value;
-  let msg = `Add/Sub require same sizes (A: ${ar}×${ac}, B: ${br}×${bc}). `;
-  msg += `Multiply requires A.cols == B.rows (${ac} vs ${br}).`;
-  compat.textContent = msg;
+//
+// Expression / step rendering helpers (kept similar to original UI behavior)
+//
+function dims(M) {
+  return [M.length, M.length ? M[0].length : 0];
 }
 
-/* ==========
-   Fill tools
-========== */
-function fillZeros(container){ container.querySelectorAll('input').forEach(i => i.value = '0'); }
-function fillOnes(container){ container.querySelectorAll('input').forEach(i => i.value = '1'); }
-function fillIdentity(container){
-  const inputs = container.querySelectorAll('input');
-  inputs.forEach(inp => {
-    const i = +inp.dataset.i, j = +inp.dataset.j;
-    inp.value = (i === j) ? '1' : '0';
-  });
-}
-function fillRandom(container, min=-9, max=9){
-  container.querySelectorAll('input').forEach(inp => {
-    const v = Math.floor(Math.random()*(max-min+1))+min;
-    inp.value = String(v);
-  });
-}
-document.getElementById('aZeros').addEventListener('click', () => fillZeros(Agrid));
-document.getElementById('aOnes').addEventListener('click', () => fillOnes(Agrid));
-document.getElementById('aIdentity').addEventListener('click', () => fillIdentity(Agrid));
-document.getElementById('aRandom').addEventListener('click', () => fillRandom(Agrid));
-document.getElementById('bZeros').addEventListener('click', () => fillZeros(Bgrid));
-document.getElementById('bOnes').addEventListener('click', () => fillOnes(Bgrid));
-document.getElementById('bIdentity').addEventListener('click', () => fillIdentity(Bgrid));
-document.getElementById('bRandom').addEventListener('click', () => fillRandom(Bgrid));
-
-/* ==========
-   Swap A and B
-========== */
-document.getElementById('swapAB').addEventListener('click', () => {
-  const ar = aRows.value, ac = aCols.value, br = bRows.value, bc = bCols.value;
-  const A = readMatrix(Agrid, +ar, +ac);
-  const B = readMatrix(Bgrid, +br, +bc);
-  aRows.value = br; aCols.value = bc; bRows.value = ar; bCols.value = ac;
-  rebuildAllGrids();
-  writeMatrix(Agrid, B);
-  writeMatrix(Bgrid, A);
-  updateCompatibilityHint();
-});
-
-/* ==========
-   API calls (for add/sub/mul)
-========== */
-async function callAPI(path, A, B){
-  const res = await fetch(path, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ A, B })
-  });
-  return res.json();
-}
-
-/* ==========
-   Step render helpers
-========== */
-function dims(M){ return [M.length, M.length? M[0].length : 0]; }
-
-function matrixHTML(M, extraClass=''){
-  const [r,c] = dims(M);
-  let rows = '';
-  for(let i=0;i<r;i++){
-    rows += `<div class="mat-row">${M[i].map(v => `<div class="mat-cell">${strip(v)}</div>`).join('')}</div>`;
+function matrixHTML(M, extraClass = "") {
+  const [r, c] = dims(M);
+  let rows = "";
+  for (let i = 0; i < r; i++) {
+    rows += `<div class="mat-row">${M[i].map((v) => `<div class="mat-cell">${strip(v)}</div>`).join("")}</div>`;
   }
   return `<div class="mat ${extraClass}" style="grid-template-rows: repeat(${r}, auto);"><div class="row">${rows}</div></div>`;
 }
-function exprAddSubMatrixHTML(A, B, op){
-  const [r,c] = dims(A);
-  const M = Array.from({length:r}, ()=>Array(c).fill(''));
-  for(let i=0;i<r;i++){
-    for(let j=0;j<c;j++){
+
+function exprAddSubMatrixHTML(A, B, op) {
+  const [r, c] = dims(A);
+  const M = Array.from({ length: r }, () => Array(c).fill(""));
+  for (let i = 0; i < r; i++) {
+    for (let j = 0; j < c; j++) {
       const a = strip(A[i][j]);
       const bRaw = B[i][j];
       const b = strip(bRaw);
       const bShown = bRaw < 0 ? `(${b})` : b;
-      M[i][j] = op === 'add' ? `${a} + ${bShown}` : `${a} − ${bShown}`;
+      M[i][j] = op === "add" ? `${a} + ${bShown}` : `${a} − ${bShown}`;
     }
   }
-  const rows = M.map(row => `<div class="mat-row">${row.map(s => `<div class="mat-cell">${s}</div>`).join('')}</div>`).join('');
+  const rows = M.map(
+    (row) =>
+      `<div class="mat-row">${row.map((s) => `<div class="mat-cell">${s}</div>`).join("")}</div>`,
+  ).join("");
   return `<div class="mat expr" style="grid-template-rows: repeat(${r}, auto);"><div class="row">${rows}</div></div>`;
 }
-function exprMulMatrixHTML(A, B){
+
+function exprMulMatrixHTML(A, B) {
   const [ar, ac] = dims(A);
   const [, bc] = dims(B);
-  const M = Array.from({length: ar}, () => Array(bc).fill(''));
-  for(let i=0;i<ar;i++){
-    for(let j=0;j<bc;j++){
+  const M = Array.from({ length: ar }, () => Array(bc).fill(""));
+  for (let i = 0; i < ar; i++) {
+    for (let j = 0; j < bc; j++) {
       const terms = [];
-      for(let k=0;k<ac;k++){
+      for (let k = 0; k < ac; k++) {
         const a = strip(A[i][k]);
         const bRaw = B[k][j];
         const b = strip(bRaw);
         const bShown = bRaw < 0 ? `(${b})` : b;
         terms.push(`${a}×${bShown}`);
       }
-      M[i][j] = terms.join(' + ');
+      M[i][j] = terms.join(" + ");
     }
   }
-  const rows = M.map(row => `<div class="mat-row">${row.map(s => `<div class="mat-cell">${s}</div>`).join('')}</div>`).join('');
+  const rows = M.map(
+    (row) =>
+      `<div class="mat-row">${row.map((s) => `<div class="mat-cell">${s}</div>`).join("")}</div>`,
+  ).join("");
   return `<div class="mat expr" style="grid-template-rows: repeat(${ar}, auto);"><div class="row">${rows}</div></div>`;
 }
 
-function renderEmptyRight(){
-  derivation.innerHTML = `
+function renderEmptyRight(derivationEl) {
+  derivationEl.innerHTML = `
     <div class="empty-title">Matrix Operations</div>
     <div class="empty-text">Enter sizes and values for A and B on the left. Choose an operation and the step-by-step explanation will show up here.</div>
   `;
 }
-function renderAddSubSteps(op, A, B, R){
-  const symbol = (op === 'add') ? '+' : '−';
-  const [ar, ac] = dims(A), [br, bc] = dims(B);
+
+function renderAddSubSteps(op, A, B, R, derivationEl) {
+  const symbol = op === "add" ? "+" : "−";
+  const [ar, ac] = dims(A),
+    [br, bc] = dims(B);
   let html = `<div class="step-block"><div class="op-title">Operation:</div>
   <div class="dim-note">A is ${ar}×${ac}, B is ${br}×${bc}</div></div>`;
   html += `<div class="eq-row">
@@ -256,10 +209,12 @@ function renderAddSubSteps(op, A, B, R){
     <div class="eq-symbol">=</div>
     ${matrixHTML(R)}
   </div>`;
-  derivation.innerHTML = html;
+  derivationEl.innerHTML = html;
 }
-function renderMulSteps(A, B, R){
-  const [ar, ac] = dims(A), [br, bc] = dims(B);
+
+function renderMulSteps(A, B, R, derivationEl) {
+  const [ar, ac] = dims(A),
+    [br, bc] = dims(B);
   let html = `<div class="step-block"><div class="op-title">Operation:</div>
   <div class="dim-note">A is ${ar}×${ac}, B is ${br}×${bc}</div></div>`;
   html += `<div class="eq-row">
@@ -272,95 +227,108 @@ function renderMulSteps(A, B, R){
     ${matrixHTML(R)}
   </div>`;
   html += `<div class="small-note">Per-entry dot products:</div>`;
-  for(let i=0;i<ar;i++){
-    for(let j=0;j<bc;j++){
+  for (let i = 0; i < ar; i++) {
+    for (let j = 0; j < bc; j++) {
       const row = A[i];
-      const col = B.map(r => r[j]);
+      const col = B.map((r) => r[j]);
       const val = R[i][j];
       html += `<div class="eq-row">
-        ${matrixHTML([row], 'expr')}
+        ${matrixHTML([row], "expr")}
         <div class="eq-symbol">·</div>
-        ${matrixHTML(col.map(v=>[v]), 'expr')}
+        ${matrixHTML(
+          col.map((v) => [v]),
+          "expr",
+        )}
         <div class="eq-symbol">=</div>
         <div class="eq-line">${strip(val)}</div>
       </div>`;
     }
   }
-  derivation.innerHTML = html;
+  derivationEl.innerHTML = html;
 }
 
-/* ==========
-   RREF with recorded steps (client-side)
-========== */
-function cloneM(M){ return M.map(row => row.slice()); }
-function snapshot(M){ return cloneM(M); }
+//
+// RREF steps: Keep client-side step recording for display, but use WASM for numeric result if available.
+// The step recorder mirrors the previous app's behavior for educational output.
+//
+function cloneM(M) {
+  return M.map((row) => row.slice());
+}
+function snapshot(M) {
+  return cloneM(M);
+}
 
-function rrefWithSteps(A){
+function rrefWithStepsClient(A) {
+  // This is the same RREF step recorder as the original app (educational).
   const M = cloneM(A);
-  const r = M.length, c = M[0].length;
+  const r = M.length,
+    c = M[0].length;
   const eps = 1e-10;
   const steps = [];
   let row = 0;
 
-  for(let col=0; col<c && row<r; col++){
-    // find pivot row
+  for (let col = 0; col < c && row < r; col++) {
     let piv = row;
     let maxAbs = Math.abs(M[piv][col]);
-    for(let i=row+1;i<r;i++){
+    for (let i = row + 1; i < r; i++) {
       const v = Math.abs(M[i][col]);
-      if (v > maxAbs){ maxAbs = v; piv = i; }
+      if (v > maxAbs) {
+        maxAbs = v;
+        piv = i;
+      }
     }
     if (maxAbs < eps) continue;
 
-    if (piv !== row){
-      // swap rows
-      const tmp = M[piv]; M[piv] = M[row]; M[row] = tmp;
-      steps.push({op:`R${row+1} ↔ R${piv+1}`, mat:snapshot(M)});
+    if (piv !== row) {
+      const tmp = M[piv];
+      M[piv] = M[row];
+      M[row] = tmp;
+      steps.push({ op: `R${row + 1} ↔ R${piv + 1}`, mat: snapshot(M) });
     }
 
-    // scale row to make pivot = 1
     const p = M[row][col];
-    if (Math.abs(p - 1) > eps){
-      for(let j=col;j<c;j++) M[row][j] /= p;
-      steps.push({op:`R${row+1} ← (1/${strip(p)}) · R${row+1}`, mat:snapshot(M)});
+    if (Math.abs(p - 1) > eps) {
+      for (let j = col; j < c; j++) M[row][j] /= p;
+      steps.push({
+        op: `R${row + 1} ← (1/${strip(p)}) · R${row + 1}`,
+        mat: snapshot(M),
+      });
     }
 
-    // eliminate other rows in this column
-    for(let i=0;i<r;i++){
+    for (let i = 0; i < r; i++) {
       if (i === row) continue;
       const f = M[i][col];
       if (Math.abs(f) < eps) continue;
-      for(let j=col;j<c;j++) M[i][j] -= f * M[row][j];
-      const sign = f<0 ? '+' : '−';
+      for (let j = col; j < c; j++) M[i][j] -= f * M[row][j];
+      const sign = f < 0 ? "+" : "−";
       const fac = strip(Math.abs(f));
-      steps.push({op:`R${i+1} ← R${i+1} ${sign} ${fac}·R${row+1}`, mat:snapshot(M)});
+      steps.push({
+        op: `R${i + 1} ← R${i + 1} ${sign} ${fac}·R${row + 1}`,
+        mat: snapshot(M),
+      });
     }
-
     row++;
   }
 
-  // clean small noise
-  for(let i=0;i<r;i++){
-    for(let j=0;j<c;j++){
+  for (let i = 0; i < r; i++) {
+    for (let j = 0; j < c; j++) {
       if (Math.abs(M[i][j]) < 1e-12) M[i][j] = 0;
     }
   }
-  return {result:M, steps};
+  return { result: M, steps };
 }
 
-function renderRREFStepsDetailed(A, trace){
+function renderRREFStepsDetailed(A, trace, derivationEl) {
   let html = `<div class="step-block"><div class="op-title">Operation:</div>
   <div class="dim-note">Gauss–Jordan elimination to RREF</div></div>`;
 
-  // initial matrix
   html += `<div class="eq-row">
     ${matrixHTML(A)}
     <div class="eq-symbol">→</div>
     ${matrixHTML(trace.steps.length ? trace.steps[0].mat : trace.result)}
   </div>`;
 
-  // list steps
-  for(const s of trace.steps){
+  for (const s of trace.steps) {
     html += `<div class="eq-row">
       <div class="eq-line">${s.op}</div>
       <div class="eq-symbol">⇒</div>
@@ -368,65 +336,304 @@ function renderRREFStepsDetailed(A, trace){
     </div>`;
   }
 
-  derivation.innerHTML = html;
+  derivationEl.innerHTML = html;
 }
 
-/* ==========
-   Operations (API for add/sub/mul, client for RREF steps)
-========== */
-async function doOp(path, opName){
-  opError.textContent = '';
-  Rgrid.innerHTML = '';
-  const Ar = +aRows.value, Ac = +aCols.value;
-  const Br = +bRows.value, Bc = +bCols.value;
-  const A = readMatrix(Agrid, Ar, Ac);
-  const B = readMatrix(Bgrid, Br, Bc);
+//
+// WASM + HTTP backend coordination
+//
+async function loadLoaderScriptIfNeeded() {
+  if (window.wasmGonum) return true;
+  // Try to load the local loader (optional) that bootstraps wasmGonum
   try {
-    const data = await callAPI(path, A, B);
-    if (data.error){
-      opError.textContent = data.error;
-      renderEmptyRight();
-      return;
+    if (!document.querySelector("script[data-wasm-loader]")) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = "/static/wasm/loader.js";
+        s.async = true;
+        s.dataset.wasmLoader = "1";
+        s.addEventListener("load", () => resolve());
+        s.addEventListener("error", () =>
+          reject(new Error("failed to load loader.js")),
+        );
+        document.head.appendChild(s);
+      });
     }
-    const R = data.result;
-    showMatrix(Rgrid, R);
-    if (opName === 'add' || opName === 'sub') renderAddSubSteps(opName, A, B, R);
-    else renderMulSteps(A, B, R);
-  } catch (e){
-    opError.textContent = 'Network error: ' + e.message;
-    renderEmptyRight();
+  } catch (e) {
+    // ignore loader load failure — we'll fallback to HTTP
   }
+  return !!window.wasmGonum;
 }
 
-async function doRREF(){
-  opError.textContent = '';
-  Rgrid.innerHTML = '';
-  const Ar = +aRows.value, Ac = +aCols.value;
-  const A = readMatrix(Agrid, Ar, Ac);
+async function ensureWasmReady() {
+  if (!(await loadLoaderScriptIfNeeded())) return false;
+  if (!window.wasmGonum) return false;
   try {
-    const trace = rrefWithSteps(A); // client-side steps + result
-    showMatrix(Rgrid, trace.result);
-    renderRREFStepsDetailed(A, trace);
-  } catch(e){
-    opError.textContent = 'RREF error: ' + e.message;
-    renderEmptyRight();
+    if (typeof window.wasmGonum.init === "function") {
+      await window.wasmGonum.init();
+    }
+    // Some loader sets isReady; otherwise try a small call to check.
+    if (typeof window.wasmGonum.isReady === "function") {
+      return !!window.wasmGonum.isReady();
+    }
+    return true;
+  } catch (e) {
+    console.warn("WASM init failed:", e && e.message ? e.message : e);
+    return false;
   }
 }
 
-document.getElementById('btnAdd').addEventListener('click', () => doOp('/api/matrix/add', 'add'));
-document.getElementById('btnSub').addEventListener('click', () => doOp('/api/matrix/subtract', 'sub'));
-document.getElementById('btnMul').addEventListener('click', () => doOp('/api/matrix/multiply', 'mul'));
-document.getElementById('btnRREF').addEventListener('click', doRREF);
+async function callHttp(path, payload) {
+  const res = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`HTTP ${res.status}: ${txt}`);
+  }
+  return res.json();
+}
 
-/* ==========
-   Copy
-========== */
-copyStepsBtn.addEventListener('click', () => {
-  const text = derivation.innerText.trim();
-  if (!text) return;
-  navigator.clipboard.writeText(text);
-});
-copyResultBtn.addEventListener('click', () => {
-  const cells = Array.from(Rgrid.querySelectorAll('input')).map(i => i.value);
-  navigator.clipboard.writeText(cells.join('\t'));
+async function computeWithBackend(op, A, B = null) {
+  // op: 'add' | 'sub' | 'mul' | 'rref'
+  // Try WASM first
+  const wasmReady = await ensureWasmReady().catch(() => false);
+  if (wasmReady && window.wasmGonum) {
+    try {
+      if (op === "add") return await window.wasmGonum.add(A, B);
+      if (op === "sub") return await window.wasmGonum.sub(A, B);
+      if (op === "mul") return await window.wasmGonum.mul(A, B);
+      if (op === "rref") return await window.wasmGonum.rref(A);
+    } catch (e) {
+      console.warn(
+        "WASM call failed, falling back to HTTP:",
+        e && e.message ? e.message : e,
+      );
+      // fall through to HTTP
+    }
+  }
+
+  // HTTP fallback
+  if (op === "add") {
+    const data = await callHttp("/api/matrix/add", { A, B });
+    if (data.error) throw new Error(data.error);
+    return data.result;
+  }
+  if (op === "sub") {
+    const data = await callHttp("/api/matrix/subtract", { A, B });
+    if (data.error) throw new Error(data.error);
+    return data.result;
+  }
+  if (op === "mul") {
+    const data = await callHttp("/api/matrix/multiply", { A, B });
+    if (data.error) throw new Error(data.error);
+    return data.result;
+  }
+  if (op === "rref") {
+    const data = await callHttp("/api/matrix/rref", { A });
+    if (data.error) throw new Error(data.error);
+    return data.result;
+  }
+  throw new Error("unsupported op " + op);
+}
+
+//
+// Wiring UI and handlers
+//
+document.addEventListener("DOMContentLoaded", () => {
+  // Elements
+  const aRows = document.getElementById("aRows");
+  const aCols = document.getElementById("aCols");
+  const bRows = document.getElementById("bRows");
+  const bCols = document.getElementById("bCols");
+  const Agrid = document.getElementById("A");
+  const Bgrid = document.getElementById("B");
+  const Rgrid = document.getElementById("Result");
+  const opError = document.getElementById("opError");
+  const compat = document.getElementById("compat");
+  const derivation = document.getElementById("derivation");
+  const copyStepsBtn = document.getElementById("copySteps");
+  const copyResultBtn = document.getElementById("copyResult");
+
+  // Build initial grids
+  function rebuildAllGrids() {
+    buildGrid(Agrid, +aRows.value, +aCols.value, 0);
+    buildGrid(Bgrid, +bRows.value, +bCols.value, 0);
+    Rgrid.innerHTML = "";
+    opError.textContent = "";
+    renderEmptyRight(derivation);
+    updateCompatibilityHint();
+  }
+  [aRows, aCols, bRows, bCols].forEach((el) =>
+    el.addEventListener("input", rebuildAllGrids),
+  );
+  rebuildAllGrids();
+
+  // Compatibility hint
+  function updateCompatibilityHint() {
+    const ar = +aRows.value,
+      ac = +aCols.value;
+    const br = +bRows.value,
+      bc = +bCols.value;
+    let msg = `Add/Sub require same sizes (A: ${ar}×${ac}, B: ${br}×${bc}). `;
+    msg += `Multiply requires A.cols == B.rows (${ac} vs ${br}).`;
+    compat.textContent = msg;
+  }
+
+  // Fill tools
+  function fillZeros(container) {
+    container.querySelectorAll("input").forEach((i) => (i.value = "0"));
+  }
+  function fillOnes(container) {
+    container.querySelectorAll("input").forEach((i) => (i.value = "1"));
+  }
+  function fillIdentity(container) {
+    const inputs = container.querySelectorAll("input");
+    inputs.forEach((inp) => {
+      const i = +inp.dataset.i,
+        j = +inp.dataset.j;
+      inp.value = i === j ? "1" : "0";
+    });
+  }
+  function fillRandom(container, min = -9, max = 9) {
+    container.querySelectorAll("input").forEach((inp) => {
+      const v = Math.floor(Math.random() * (max - min + 1)) + min;
+      inp.value = String(v);
+    });
+  }
+  document
+    .getElementById("aZeros")
+    .addEventListener("click", () => fillZeros(Agrid));
+  document
+    .getElementById("aOnes")
+    .addEventListener("click", () => fillOnes(Agrid));
+  document
+    .getElementById("aIdentity")
+    .addEventListener("click", () => fillIdentity(Agrid));
+  document
+    .getElementById("aRandom")
+    .addEventListener("click", () => fillRandom(Agrid));
+  document
+    .getElementById("bZeros")
+    .addEventListener("click", () => fillZeros(Bgrid));
+  document
+    .getElementById("bOnes")
+    .addEventListener("click", () => fillOnes(Bgrid));
+  document
+    .getElementById("bIdentity")
+    .addEventListener("click", () => fillIdentity(Bgrid));
+  document
+    .getElementById("bRandom")
+    .addEventListener("click", () => fillRandom(Bgrid));
+
+  // Swap A and B
+  document.getElementById("swapAB").addEventListener("click", () => {
+    const ar = aRows.value,
+      ac = aCols.value,
+      br = bRows.value,
+      bc = bCols.value;
+    const A = readMatrix(Agrid, +ar, +ac);
+    const B = readMatrix(Bgrid, +br, +bc);
+    aRows.value = br;
+    aCols.value = bc;
+    bRows.value = ar;
+    bCols.value = ac;
+    rebuildAllGrids();
+    writeMatrix(Agrid, B);
+    writeMatrix(Bgrid, A);
+    updateCompatibilityHint();
+  });
+
+  // API call wrapper (now delegates to computeWithBackend)
+  async function callAPI(path, A, B) {
+    // Map HTTP path to op for the computeWithBackend adapter
+    if (path.endsWith("/add"))
+      return { result: await computeWithBackend("add", A, B) };
+    if (path.endsWith("/subtract"))
+      return { result: await computeWithBackend("sub", A, B) };
+    if (path.endsWith("/multiply"))
+      return { result: await computeWithBackend("mul", A, B) };
+    // fallback
+    return { result: await computeWithBackend("add", A, B) };
+  }
+
+  // Operation handlers
+  async function doOp(path, opName) {
+    opError.textContent = "";
+    Rgrid.innerHTML = "";
+    const Ar = +aRows.value,
+      Ac = +aCols.value;
+    const Br = +bRows.value,
+      Bc = +bCols.value;
+    const A = readMatrix(Agrid, Ar, Ac);
+    const B = readMatrix(Bgrid, Br, Bc);
+    try {
+      const data = await callAPI(path, A, B);
+      if (data.error) {
+        opError.textContent = data.error;
+        renderEmptyRight(derivation);
+        return;
+      }
+      const R = data.result;
+      showMatrix(Rgrid, R);
+      if (opName === "add" || opName === "sub")
+        renderAddSubSteps(opName, A, B, R, derivation);
+      else renderMulSteps(A, B, R, derivation);
+    } catch (e) {
+      opError.textContent =
+        "Operation error: " + (e && e.message ? e.message : e);
+      renderEmptyRight(derivation);
+    }
+  }
+
+  async function doRREF() {
+    opError.textContent = "";
+    Rgrid.innerHTML = "";
+    const Ar = +aRows.value,
+      Ac = +aCols.value;
+    const A = readMatrix(Agrid, Ar, Ac);
+    try {
+      // Use client-side step tracing for explanation, but fetch numeric result from WASM/HTTP
+      const trace = rrefWithStepsClient(A);
+      // numeric RREF from backend (WASM preferred)
+      let numeric;
+      try {
+        numeric = await computeWithBackend("rref", A);
+      } catch (e) {
+        // fall back to client numeric result
+        numeric = trace.result;
+      }
+      showMatrix(Rgrid, numeric);
+      renderRREFStepsDetailed(A, trace, derivation);
+    } catch (e) {
+      opError.textContent = "RREF error: " + (e && e.message ? e.message : e);
+      renderEmptyRight(derivation);
+    }
+  }
+
+  document
+    .getElementById("btnAdd")
+    .addEventListener("click", () => doOp("/api/matrix/add", "add"));
+  document
+    .getElementById("btnSub")
+    .addEventListener("click", () => doOp("/api/matrix/subtract", "sub"));
+  document
+    .getElementById("btnMul")
+    .addEventListener("click", () => doOp("/api/matrix/multiply", "mul"));
+  document.getElementById("btnRREF").addEventListener("click", doRREF);
+
+  // Copy buttons
+  copyStepsBtn.addEventListener("click", () => {
+    const text = derivation.innerText.trim();
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+  });
+  copyResultBtn.addEventListener("click", () => {
+    const cells = Array.from(Rgrid.querySelectorAll("input")).map(
+      (i) => i.value,
+    );
+    navigator.clipboard.writeText(cells.join("\t"));
+  });
 });
