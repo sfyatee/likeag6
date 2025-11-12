@@ -295,14 +295,18 @@ func handleRREF(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// ✅ Serve from "frontend" folder (like your original setup)
+	// Serve frontend files
 	frontendDir := "frontend"
 
-	fs := http.FileServer(http.Dir(frontendDir))
+	// Serve ONLY assets from /static/ → frontend/static
+	staticRoot := filepath.Join(frontendDir, "static")
+	fs := http.FileServer(http.Dir(staticRoot))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
+	// Explicit pages
 	landingPage := filepath.Join(frontendDir, "index.html")
 	calcPage := filepath.Join(frontendDir, "matrixCalc.html")
+	graphingPage := filepath.Join(frontendDir, "graphing.html")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
@@ -310,16 +314,20 @@ func main() {
 			http.ServeFile(w, r, landingPage)
 		case "/matrixCalc":
 			http.ServeFile(w, r, calcPage)
+		case "/graphing":
+			http.ServeFile(w, r, graphingPage)
 		default:
 			http.NotFound(w, r)
 		}
 	})
 
+	// API routes
 	http.HandleFunc("/api/matrix/add", handleAdd)
 	http.HandleFunc("/api/matrix/subtract", handleSub)
 	http.HandleFunc("/api/matrix/multiply", handleMul)
 	http.HandleFunc("/api/matrix/rref", handleRREF)
 
+	// Start
 	port := 8080
 	url := fmt.Sprintf("http://localhost:%d", port)
 	fmt.Printf("🚀 G6Labs running on %s\n", url)
