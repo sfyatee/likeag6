@@ -11,9 +11,9 @@
   --card-bg:#f7f7f7;
   --white:#ffffff;
 
-  --primary:#7994A0;   /* lighter button */
-  --primary-alt:#0F4662; /* darker button */
-  --highlight:#FFD700; /* hover border highlight */
+  --primary:#7994A0;      /* lighter button */
+  --primary-alt:#0F4662;  /* darker button */
+  --highlight:#FFD700;    /* hover border highlight */
 }
 
 *{ box-sizing:border-box; -webkit-font-smoothing:antialiased; }
@@ -28,13 +28,18 @@ body{
   overflow:hidden;
 }
 
-/* LEFT PANEL */
+/* =======================
+   LEFT PANEL
+   ======================= */
 #panel{
   background: linear-gradient(180deg, var(--panel-grad-start) 0%, var(--panel-grad-end) 100%);
   border-right:1px solid var(--border);
   padding:16px;
+  /* push content below the fixed top-left logo */
+  padding-top: 120px;              /* 16(top offset) + 76(logo) + margin */
   overflow:auto;
-  color:#ffffff; /* headings/labels on gradient */
+  color:#ffffff;                   /* headings/labels on gradient */
+  position: relative;
 }
 #panel h1{ font-size:18px; margin:0 0 8px; letter-spacing:.3px; color:#ffffff; }
 #panel .sub{ color:#e6eef2; font-size:12px; margin-bottom:16px }
@@ -107,7 +112,9 @@ button.ghost{
   background:var(--white); color:var(--text);
 }
 
-/* RIGHT SIDE */
+/* =======================
+   RIGHT SIDE
+   ======================= */
 #right{ overflow:auto; background: var(--bg); }
 .right-wrap{ padding:24px 28px; max-width:1100px; margin:0 auto; }
 .right-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
@@ -193,3 +200,24 @@ button:focus-visible, input:focus-visible, select:focus-visible{
   border-color: var(--border);
 }
 #swapAB:hover{ border-color: var(--highlight); }
+
+/* =======================
+   FIXED SITE LOGO (same as landing/graphing)
+   ======================= */
+.site-logo-fixed{
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  display: inline-block;
+}
+.site-logo-fixed .likeaglogo-png{
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  display:block;
+}
+@media (max-width: 900px){
+  .site-logo-fixed{ top:12px; left:12px; }
+  .site-logo-fixed .likeaglogo-png{ width:64px; height:64px; }
+}
