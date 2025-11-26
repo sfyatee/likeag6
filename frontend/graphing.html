@@ -4,11 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Brand styles -->
-  <link rel="stylesheet" href="/static/globals.css" />
-  <link rel="stylesheet" href="/static/styleguide.css" />
-  <link rel="stylesheet" href="/static/style.css" />
-
   <!-- Graphing page overrides -->
   <link rel="stylesheet" href="/static/graphing.css" />
   <title>G6Labs • Graphing</title>
@@ -17,42 +12,9 @@
   <div class="landing-page">
     <!-- Header (not fixed; we override in graphing.css) -->
     <div class="navigation-header">
-      <div class="png">
-        <img class="likeaglogo-png" src="https://c.animaapp.com/UosP7fum/img/likeag6logo-png@2x.png" />
+      <div class="G6Logo" id="likeag6Logo">
+        <img src="static/assets/G6Logo.png" alt="Logo img and Home btn">
       </div>
-
-      <div class="assistance-button" onclick="location.href='/'" role="button" tabindex="0" aria-label="Home">
-        <div class="rectangle"></div>
-        <div class="text-wrapper-15">Home</div>
-        <img class="img-4" src="https://c.animaapp.com/UosP7fum/img/search-icon.svg" />
-      </div>
-
-      <div class="graphing-button" onclick="location.href='/graphing'" role="button" tabindex="0" aria-label="Graphing">
-        <div class="rectangle-2"></div>
-        <div class="text-wrapper-15">Graphing</div>
-        <img class="img-5" src="https://c.animaapp.com/UosP7fum/img/graph-icon.svg" />
-      </div>
-
-      <div class="calculator-button" onclick="location.href='/matrixCalc'" role="button" tabindex="0" aria-label="Calculator">
-        <div class="rectangle"></div>
-        <div class="text-wrapper-15">Calculator</div>
-        <img class="img-5" src="https://c.animaapp.com/UosP7fum/img/calculator-icon.svg" />
-      </div>
-
-      <button class="login-button-button">
-        <div class="rectangle"></div>
-        <div class="login-text">Login</div>
-        <img class="img-4" src="https://c.animaapp.com/UosP7fum/img/user-icon.svg" />
-      </button>
-
-      <div class="search-bar">
-        <div class="search-bar-2">
-          <img class="message-question" src="https://c.animaapp.com/UosP7fum/img/message-question.svg" />
-          <div class="text-wrapper-16">Search...</div>
-          <img class="x" src="https://c.animaapp.com/UosP7fum/img/x.svg" />
-        </div>
-      </div>
-    </div>
 
     <p class="main-section-header">Graphing</p>
 
@@ -97,8 +59,8 @@
 
         <div class="matrix-box">
           <div class="matrix-title">Active Matrix</div>
-          <pre id="matrixOut">[ 1 0
-  0 1 ]</pre>
+          <pre id="matrixOut"> 1 0
+  0 1 </pre>
         </div>
       </div>
 

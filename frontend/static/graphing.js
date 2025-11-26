@@ -24,7 +24,7 @@
 
   // ---------- Utils ----------
   function prettyMatrixText(m){
-    return `[ ${m[0][0]} ${m[0][1]}\n  ${m[1][0]} ${m[1][1]} ]`;
+    return `${m[0][0]} ${m[0][1]}\n${m[1][0]} ${m[1][1]}`;
   }
   function currentMatrix(){
     const A = [
@@ -284,4 +284,9 @@
     modeSel.value = '3d';
     setMode('3d');
   });
+
+  const homeBtn = document.getElementById("likeag6Logo");
+  homeBtn.addEventListener('click', () => {
+    window.location.href = '/';
+});
 })();

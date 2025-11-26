@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/common.css">
+</head>
+<body>
+    <!--Left Panel-->
+    <aside class="left-panel">
+        <div class="bgBlob blob1"></div>
+        <div class="bgBlob blob2"></div>
+        <div class="bgBlob blob3"></div>
+        <div class="bgBlob blob4"></div>
+        <div class="bgBlob blob5"></div>
+        <div class="G6Logo" id="G6Logo">
+            <img src="/static/assets/G6Logo.png" alt="likeag6 Logo/Home btn">
+        </div>
+    </aside>
+
+    <!--Right panel - main login content-->
+    <main class="authPanel">
+        <div class="backBtn" id="backBtn">
+            <img src="/static/assets/BackArrow.svg" alt="back button icon to return to signup">
+        </div>
+        <form class="authForm">
+            <h1>Login to G6Labs</h1>
+
+            <!--Email row-->
+            <div class="formRow">
+                <div class="formField fullWidth">
+                    <label>Email</label>
+                    <input type="email" placeholder="Janedoe@gmail.com" id="emailField">
+                </div>
+            </div>
+
+            <!--Password row-->
+            <div class="formRow">
+                <div class="formField fullWidth">
+                    <label>Password</label>
+                    <input type="password" placeholder="password123" id="passwordField">
+                </div>
+            </div>
+            
+            <button class="authBtn" id="loginBtn">Login</button>
+            <p>Don't have an account? <span class="authLink" id="signupBtn">Sign Up</span></p>
+        </form>
+    </main>
+
+    <!--JS connection-->
+    <script src="/static/login.js"></script>
+</body>
+</html>

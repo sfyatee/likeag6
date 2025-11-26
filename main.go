@@ -295,6 +295,12 @@ func handleRREF(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Initialize database connection
+	if err := InitDB(); err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	defer CloseDB()
+
 	// Serve frontend files
 	frontendDir := "frontend"
 
@@ -307,6 +313,9 @@ func main() {
 	landingPage := filepath.Join(frontendDir, "index.html")
 	calcPage := filepath.Join(frontendDir, "matrixCalc.html")
 	graphingPage := filepath.Join(frontendDir, "graphing.html")
+	loginPage := filepath.Join(frontendDir, "login.html")
+	signupPage := filepath.Join(frontendDir, "signup.html")
+	dashboardPage := filepath.Join(frontendDir, "dashboard.html")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
@@ -316,6 +325,12 @@ func main() {
 			http.ServeFile(w, r, calcPage)
 		case "/graphing":
 			http.ServeFile(w, r, graphingPage)
+		case "/login":
+			http.ServeFile(w, r, loginPage)
+		case "/signup":
+			http.ServeFile(w, r, signupPage)
+		case "/dashboard":
+			http.ServeFile(w, r, dashboardPage)
 		default:
 			http.NotFound(w, r)
 		}
@@ -326,6 +341,10 @@ func main() {
 	http.HandleFunc("/api/matrix/subtract", handleSub)
 	http.HandleFunc("/api/matrix/multiply", handleMul)
 	http.HandleFunc("/api/matrix/rref", handleRREF)
+
+	// Auth routes
+	http.HandleFunc("/api/auth/signup", handleSignup)
+	http.HandleFunc("/api/auth/login", handleLogin)
 
 	// Start
 	port := 8080

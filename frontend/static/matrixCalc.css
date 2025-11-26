@@ -206,18 +206,19 @@ button:focus-visible, input:focus-visible, select:focus-visible{
    ======================= */
 .site-logo-fixed{
   position: fixed;
-  top: 16px;
-  left: 16px;
+  top: 10px;
+  left: 10px;
   z-index: 1000;
-  display: inline-block;
+  display: block;
+  cursor: pointer;
 }
-.site-logo-fixed .likeaglogo-png{
-  width: 76px;
-  height: 76px;
-  object-fit: contain;
-  display:block;
+.site-logo-fixed img{
+    width: clamp(60px, 5vw, 100px);
+    height: clamp(60px, 5vw, 100px);
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5));
+    display: block;
 }
 @media (max-width: 900px){
   .site-logo-fixed{ top:12px; left:12px; }
-  .site-logo-fixed .likeaglogo-png{ width:64px; height:64px; }
+  .site-logo-fixed img{ width:64px; height:64px; }
 }
