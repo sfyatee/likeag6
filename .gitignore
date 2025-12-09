@@ -1,0 +1,54 @@
+# Ignore generated WebAssembly artifacts and other build outputs for this project.
+# This file lives in the likeag6/ directory so paths are relative to that directory.
+
+# --- WebAssembly build artifacts (generated) ---
+# The compiled Go->WASM binary(s)
+frontend/*.wasm
+frontend/**/*.wasm
+frontend/*.wasm.map
+
+# If you put wasm into a different path, ignore the common names as well
+**/main.wasm
+
+# --- Go build artifacts ---
+# Server binary produced by the Makefile
+likeag6-server
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+
+# --- Node / frontend dev artifacts ---
+frontend/node_modules/
+# build/dist folders (if you add them later)
+frontend/dist/
+frontend/build/
+
+# --- Temporary / editor files ---
+.DS_Store
+Thumbs.db
+*.swp
+*~
+*.tmp
+*.log
+
+# --- Test / coverage ---
+coverage.out
+*.prof
+
+# --- Environment / secrets ---
+.env
+.env.local
+
+# --- IDEs ---
+.vscode/
+.idea/
+*.iml
+
+# NOTE:
+# - The Go runtime bootstrap `wasm_exec.js` is not included in this ignore file by default.
+#   You can choose to commit `frontend/wasm/wasm_exec.js` for convenience, or let CI copy it
+#   from your Go installation during builds. If you want to ignore it, add:
+#     frontend/wasm/wasm_exec.js
+# - If you have other generated files you want ignored, add them here.

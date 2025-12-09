@@ -10,6 +10,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
+
+	"gonum.org/v1/gonum/mat"
 )
 
 // ---------- Utils: open browser ----------
@@ -30,7 +33,7 @@ func openBrowser(url string) {
 	_ = exec.Command(cmd, args...).Start()
 }
 
-// ---------- Matrix types ----------
+// ---------- Matrix types and gonum-backed operations ----------
 type Matrix [][]float64
 
 type TwoMatrixRequest struct {
@@ -47,7 +50,6 @@ type OneMatrixResponse struct {
 	Error  string `json:"error,omitempty"`
 }
 
-// ---------- Validation helpers ----------
 func dims(m Matrix) (int, int) {
 	if len(m) == 0 {
 		return 0, 0
@@ -71,7 +73,33 @@ func validateRect(m Matrix) error {
 	return nil
 }
 
-// ---------- Operations ----------
+func toDense(m Matrix) (*mat.Dense, error) {
+	if err := validateRect(m); err != nil {
+		return nil, err
+	}
+	r, c := dims(m)
+	data := make([]float64, r*c)
+	for i := 0; i < r; i++ {
+		for j := 0; j < c; j++ {
+			data[i*c+j] = m[i][j]
+		}
+	}
+	return mat.NewDense(r, c, data), nil
+}
+
+func fromDense(d *mat.Dense) Matrix {
+	r, c := d.Dims()
+	M := make(Matrix, r)
+	for i := 0; i < r; i++ {
+		row := make([]float64, c)
+		for j := 0; j < c; j++ {
+			row[j] = d.At(i, j)
+		}
+		M[i] = row
+	}
+	return M
+}
+
 func add(A, B Matrix) (Matrix, error) {
 	if err := validateRect(A); err != nil {
 		return nil, fmt.Errorf("A: %w", err)
@@ -84,14 +112,11 @@ func add(A, B Matrix) (Matrix, error) {
 	if ar != br || ac != bc {
 		return nil, fmt.Errorf("add requires same dimensions, got %dx%d and %dx%d", ar, ac, br, bc)
 	}
-	R := make(Matrix, ar)
-	for i := 0; i < ar; i++ {
-		R[i] = make([]float64, ac)
-		for j := 0; j < ac; j++ {
-			R[i][j] = A[i][j] + B[i][j]
-		}
-	}
-	return R, nil
+	ad, _ := toDense(A)
+	bd, _ := toDense(B)
+	rd := mat.NewDense(ar, ac, nil)
+	rd.Add(ad, bd)
+	return fromDense(rd), nil
 }
 
 func sub(A, B Matrix) (Matrix, error) {
@@ -106,14 +131,11 @@ func sub(A, B Matrix) (Matrix, error) {
 	if ar != br || ac != bc {
 		return nil, fmt.Errorf("subtract requires same dimensions, got %dx%d and %dx%d", ar, ac, br, bc)
 	}
-	R := make(Matrix, ar)
-	for i := 0; i < ar; i++ {
-		R[i] = make([]float64, ac)
-		for j := 0; j < ac; j++ {
-			R[i][j] = A[i][j] - B[i][j]
-		}
-	}
-	return R, nil
+	ad, _ := toDense(A)
+	bd, _ := toDense(B)
+	rd := mat.NewDense(ar, ac, nil)
+	rd.Sub(ad, bd)
+	return fromDense(rd), nil
 }
 
 func mul(A, B Matrix) (Matrix, error) {
@@ -128,18 +150,11 @@ func mul(A, B Matrix) (Matrix, error) {
 	if ac != br {
 		return nil, fmt.Errorf("multiply requires A.cols == B.rows, got %dx%d · %dx%d", ar, ac, br, bc)
 	}
-	R := make(Matrix, ar)
-	for i := 0; i < ar; i++ {
-		R[i] = make([]float64, bc)
-		for j := 0; j < bc; j++ {
-			sum := 0.0
-			for k := 0; k < ac; k++ {
-				sum += A[i][k] * B[k][j]
-			}
-			R[i][j] = sum
-		}
-	}
-	return R, nil
+	ad, _ := toDense(A)
+	bd, _ := toDense(B)
+	rd := mat.NewDense(ar, bc, nil)
+	rd.Mul(ad, bd)
+	return fromDense(rd), nil
 }
 
 // rref performs Gauss-Jordan elimination with partial pivoting.
@@ -294,12 +309,22 @@ func handleRREF(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, OneMatrixResponse{Result: res})
 }
 
+// ---------- main: static server + API ----------
 func main() {
-	// ✅ Serve from "frontend" folder (like your original setup)
 	frontendDir := "frontend"
 
+	// file server for static assets with correct MIME types for wasm/js
 	fs := http.FileServer(http.Dir(frontendDir))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	http.Handle("/static/", http.StripPrefix("/static/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// r.URL.Path here points inside the frontend directory because of the StripPrefix
+		if strings.HasSuffix(r.URL.Path, ".wasm") {
+			w.Header().Set("Content-Type", "application/wasm")
+		} else if strings.HasSuffix(r.URL.Path, ".js") {
+			w.Header().Set("Content-Type", "application/javascript")
+		}
+		// Let the file server serve the file (it will handle 404s)
+		fs.ServeHTTP(w, r)
+	})))
 
 	landingPage := filepath.Join(frontendDir, "index.html")
 	calcPage := filepath.Join(frontendDir, "matrixCalc.html")
@@ -315,6 +340,7 @@ func main() {
 		}
 	})
 
+	// API endpoints backed by gonum
 	http.HandleFunc("/api/matrix/add", handleAdd)
 	http.HandleFunc("/api/matrix/subtract", handleSub)
 	http.HandleFunc("/api/matrix/multiply", handleMul)
