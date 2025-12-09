@@ -1,0 +1,180 @@
+/* --- NAV OVERRIDES: make the top menu NOT fixed on this page --- */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+.navigation-header{
+    background: linear-gradient(180deg, #7994A0 10%, #0f4662 100%);
+    width: 100%;
+    height: 150px;
+}
+.main-section-header{ margin-top: 12px; }
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+}
+
+.G6Logo {
+    display: flex;
+    top: 10px;
+    left: 10px;
+    width: clamp(60px, 5vw, 100px);
+    height: clamp(60px, 5vw, 100px);
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5));
+}
+
+.main-section-header{
+  font-family: 'Quicksand';
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  margin-left: 10px;
+}
+
+/* Old-style: left sidebar controls, right stage */
+:root{
+  --bg:#ffffff; --text:#0f4662; --muted:#355d6f; --primary:#0f4662;
+  --panel:#ffffff; --border:rgba(15,70,98,0.12);
+}
+
+.graphing-panel{
+  display:grid;
+  grid-template-columns:360px 1fr; /* sidebar width like calculator */
+  min-height:82.3vh;
+  gap:0;
+  border-top:1px solid var(--border);
+  position: relative;
+  z-index: 2; /* render above any header background art */
+}
+
+.graphing-controls{
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  overflow:auto; /* scroll if tall */
+}
+
+.graphing-controls label{
+  display:flex; flex-direction:column; gap:6px;
+  font-size:12px; color:var(--muted);
+}
+
+.graphing-controls select,
+.graphing-controls input[type="number"]{
+  appearance:none;
+  background:#fff;
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px 10px;
+  outline:none;
+}
+
+.graphing-btn{
+  background:#ffffff;
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:10px;
+  padding:8px 12px;
+  cursor:pointer; font-weight:600;
+  box-shadow:0 1px 0 rgba(15,70,98,0.05);
+}
+.graphing-btn:hover{ border-color:rgba(15,70,98,0.35); }
+
+.matrix-editor{ margin-top:6px; }
+.matrix-title{ color:var(--muted); font-size:12px; margin:6px 0; }
+
+.matrix-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+
+.matrix-grid input[type="number"]{
+  width: 85%;
+}
+
+.matrix-actions{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+
+.matrix-box{
+  margin-top:10px;
+  padding:10px 12px;
+  border:1px dashed var(--border);
+  border-radius:10px;
+}
+.matrix-box pre{
+  margin:0; color:var(--primary);
+  font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  padding: 8px 16px;
+  position: relative;
+  display: inline-block;
+}
+
+/* Left bracket */
+.matrix-box pre::before{
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  border-left: 2px solid var(--primary);
+  border-top: 2px solid var(--primary);
+  border-bottom: 2px solid var(--primary);
+}
+
+/* Right bracket */
+.matrix-box pre::after{
+  content: '';
+  position: absolute;
+  right: 4px;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  border-right: 2px solid var(--primary);
+  border-top: 2px solid var(--primary);
+  border-bottom: 2px solid var(--primary);
+}
+
+/* --- DARK STAGE so vectors/axes pop --- */
+.graphing-stage{
+  position:relative;
+  background:#0d1117;    /* dark */
+  overflow:hidden;
+  z-index: 2;
+}
+
+/* Fill area */
+#canvas2d{ width:100%; height:100%; display:block; }
+.three-root{ position:absolute; inset:0; }
+
+.stage-msg{
+  position:absolute; top:12px; right:12px;
+  background:rgba(13,17,23,.85);
+  color:#e6edf3;
+  border:1px solid #30363d;
+  border-radius:10px; padding:8px 10px; font-size:12px;
+}
+
+.hint{
+  position:absolute; left:12px; bottom:12px;
+  color:#8b949e;
+  background:rgba(13,17,23,.65);
+  border:1px solid #30363d;
+  border-radius:10px; padding:6px 8px; font-size:12px;
+  pointer-events:none;
+}
+
+@media (max-width:1000px){
+  .graphing-panel{
+    grid-template-columns:1fr;
+    grid-template-rows:auto 1fr;
+  }
+  .graphing-controls{
+    border-right:none; border-bottom:1px solid var(--border);
+  }
+}

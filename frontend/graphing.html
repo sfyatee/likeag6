@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Graphing page overrides -->
+  <link rel="stylesheet" href="/static/graphing.css" />
+  <title>G6Labs • Graphing</title>
+</head>
+<body>
+  <div class="landing-page">
+    <!-- Header (not fixed; we override in graphing.css) -->
+    <div class="navigation-header">
+      <div class="G6Logo" id="likeag6Logo">
+        <img src="static/assets/G6Logo.png" alt="Logo img and Home btn">
+      </div>
+
+    <p class="main-section-header">Graphing</p>
+
+    <!-- Two-column graphing section (old-style: sidebar left / stage right) -->
+    <section class="graphing-panel">
+      <!-- Left controls (scrollable) -->
+      <div class="graphing-controls">
+        <label>Mode
+          <select id="mode" aria-label="Mode">
+            <option value="2d">2D</option>
+            <option value="3d" selected>3D</option>
+          </select>
+        </label>
+
+        <label>Preset
+          <select id="preset" aria-label="Preset">
+            <option value="identity" selected>Identity</option>
+            <option value="scaleUp">Scale Up</option>
+            <option value="scaleDown">Scale Down</option>
+            <option value="rotate30">Rotate 30°</option>
+            <option value="shearX">Shear X</option>
+            <option value="reflectX">Reflect X</option>
+            <option value="reflectY">Reflect Y</option>
+          </select>
+        </label>
+
+        <button id="reset" class="graphing-btn" type="button">Reset</button>
+
+        <div class="matrix-editor">
+          <div class="matrix-title">Matrix A (2×2)</div>
+          <div class="matrix-grid">
+            <input id="a11" type="number" step="any" value="1" />
+            <input id="a12" type="number" step="any" value="0" />
+            <input id="a21" type="number" step="any" value="0" />
+            <input id="a22" type="number" step="any" value="1" />
+          </div>
+          <div class="matrix-actions">
+            <button id="apply" class="graphing-btn" type="button">Apply Matrix</button>
+            <button id="export" class="graphing-btn" type="button">Export PNG</button>
+          </div>
+        </div>
+
+        <div class="matrix-box">
+          <div class="matrix-title">Active Matrix</div>
+          <pre id="matrixOut"> 1 0
+  0 1 </pre>
+        </div>
+      </div>
+
+      <!-- Right stage (fills) -->
+      <div class="graphing-stage">
+        <canvas id="canvas2d"></canvas>
+        <div id="threeRoot" class="three-root"></div>
+        <div id="stageMsg" class="stage-msg" hidden></div>
+        <div class="hint">3D tips: left-drag rotate • right-drag pan • wheel zoom</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Try local THREE first -->
+  <script src="/static/three.min.js"></script>
+  <script>
+    if (!window.THREE) {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
+      document.head.appendChild(s);
+    }
+  </script>
+
+  <!-- Global site script (optional) -->
+  <script src="/static/index.js" defer></script>
+
+  <!-- Graphing logic: waits for THREE if needed -->
+  <script src="/static/graphing.js" defer></script>
+</body>
+</html>

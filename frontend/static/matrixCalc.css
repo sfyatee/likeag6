@@ -1,0 +1,224 @@
+:root{
+  /* Landing page palette */
+  --bg:#ffffff;
+  --panel-grad-start:#7994A0;
+  --panel-grad-end:#0F4662;
+
+  --text:#0F4662;
+  --muted:#7994A0;
+
+  --border:#808080;
+  --card-bg:#f7f7f7;
+  --white:#ffffff;
+
+  --primary:#7994A0;      /* lighter button */
+  --primary-alt:#0F4662;  /* darker button */
+  --highlight:#FFD700;    /* hover border highlight */
+}
+
+*{ box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family: "Quicksand", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  display:grid;
+  grid-template-columns: 460px 1fr;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* =======================
+   LEFT PANEL
+   ======================= */
+#panel{
+  background: linear-gradient(180deg, var(--panel-grad-start) 0%, var(--panel-grad-end) 100%);
+  border-right:1px solid var(--border);
+  padding:16px;
+  /* push content below the fixed top-left logo */
+  padding-top: 120px;              /* 16(top offset) + 76(logo) + margin */
+  overflow:auto;
+  color:#ffffff;                   /* headings/labels on gradient */
+  position: relative;
+}
+#panel h1{ font-size:18px; margin:0 0 8px; letter-spacing:.3px; color:#ffffff; }
+#panel .sub{ color:#e6eef2; font-size:12px; margin-bottom:16px }
+
+.card{
+  background: var(--white);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  margin-bottom:12px;
+  color: var(--text);
+  box-shadow: 0 2px 6px rgba(0,0,0,.04);
+}
+
+.header-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.title-sm{ font-weight:700; color:var(--text); }
+.toolbar{ display:flex; gap:6px; flex-wrap:wrap; }
+.row{ display:grid; grid-template-columns: 1fr 1fr; gap:8px; }
+.grid{ display:grid; gap:8px; }
+
+label{ font-size:12px; color:var(--muted); display:block; margin-bottom:4px }
+
+/* Inputs & buttons (light) */
+select,
+input[type="number"],
+button{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--white);
+  color:var(--text);
+  outline:none;
+}
+
+input[type="number"]::placeholder{ color:#b6c3c9; }
+
+button{
+  cursor:pointer;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .02s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+button:hover{ border-color: var(--highlight); }
+button:active{ transform: translateY(1px); }
+
+button.primary{
+  /* Use the two landing buttons: lighter & darker */
+  background: var(--primary);
+  color:#ffffff;
+  border-color: transparent;
+}
+button.primary:hover{
+  border-color: var(--highlight);
+}
+
+button.ghost{
+  background: transparent;
+  color: var(--text);
+}
+
+.muted{ color:var(--muted); font-size:12px }
+.error-text{ color:#c0392b; font-size:12px; margin-top:6px; min-height:18px; }
+.hint{ margin-top:6px; min-height:16px; color:var(--muted); }
+
+/* Matrix entry grids (left) */
+.matrix-grid{ display:inline-grid; gap:4px; }
+.matrix-grid input{
+  width:76px; padding:6px 8px; text-align:right;
+  border-radius:8px; border:1px solid var(--border);
+  background:var(--white); color:var(--text);
+}
+
+/* =======================
+   RIGHT SIDE
+   ======================= */
+#right{ overflow:auto; background: var(--bg); }
+.right-wrap{ padding:24px 28px; max-width:1100px; margin:0 auto; }
+.right-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.right-title{ font-size:20px; font-weight:700; color:var(--text); }
+.right-sub{ color:var(--muted); }
+
+.derivation{
+  background: var(--card-bg);
+  border:1px solid #e6e6e6;
+  border-radius:14px;
+  padding:16px; min-height:260px;
+  color: var(--text);
+}
+
+/* Matrix rendering in steps */
+.step-block{ margin-bottom:18px; }
+.op-title{ font-weight:700; margin-bottom:6px; color:var(--text); }
+.eq-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:8px 0; }
+
+.mat{
+  display:inline-grid;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px 10px;
+  background:var(--white);
+}
+.mat .row{ display:grid; grid-template-columns:auto; gap:0; }
+.mat-row{ display:grid; grid-auto-flow:column; gap:8px; }
+
+.mat-cell{
+  min-width:64px; text-align:right; padding:2px 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  white-space:nowrap;
+  color:var(--text);
+}
+
+.mat.expr .mat-cell{
+  font-size:12px; color:#324f5d; /* readable on light */
+}
+
+.eq-symbol{
+  font-weight:700; font-size:18px; min-width:20px; text-align:center; color:var(--text);
+}
+
+.dim-note{ color:var(--muted); font-size:12px; margin-top:4px; }
+.small-note{ color:var(--muted); font-size:12px; margin-top:2px; }
+
+/* dot product lines */
+.eq-line{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  line-height:1.6; margin-left:2px; color:var(--text);
+}
+
+/* Empty state */
+.empty-title{ font-size:22px; font-weight:700; color:#7994A0; text-align:center; margin-bottom:6px; }
+.empty-text{ color:var(--muted); max-width:640px; text-align:center; margin:0 auto; }
+
+/* Utility buttons on right */
+#copySteps, #copyResult{
+  border-color: var(--border);
+  background: var(--white);
+  color: var(--text);
+}
+#copySteps:hover, #copyResult:hover{ border-color: var(--highlight); }
+
+/* Accessibility focus (match globals) */
+button:focus-visible, input:focus-visible, select:focus-visible{
+  outline: 2px solid #4a90e2 !important;
+  outline-offset: 2px;
+}
+
+/* Make primary rows visually paired like landing buttons (optional alt variant) */
+.row .primary:nth-child(2){
+  background: var(--primary-alt);
+}
+.row .primary:nth-child(2):hover{
+  border-color: var(--highlight);
+}
+
+/* Swap link look */
+#swapAB{
+  color: var(--text);
+  border-color: var(--border);
+}
+#swapAB:hover{ border-color: var(--highlight); }
+
+/* =======================
+   FIXED SITE LOGO (same as landing/graphing)
+   ======================= */
+.site-logo-fixed{
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  display: block;
+  cursor: pointer;
+}
+.site-logo-fixed img{
+    width: clamp(60px, 5vw, 100px);
+    height: clamp(60px, 5vw, 100px);
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5));
+    display: block;
+}
+@media (max-width: 900px){
+  .site-logo-fixed{ top:12px; left:12px; }
+  .site-logo-fixed img{ width:64px; height:64px; }
+}

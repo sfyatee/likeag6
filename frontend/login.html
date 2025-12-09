@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/common.css" />
+  </head>
+  <body>
+    <!--Left Panel-->
+    <aside class="left-panel">
+      <div class="bgBlob blob1"></div>
+      <div class="bgBlob blob2"></div>
+      <div class="bgBlob blob3"></div>
+      <div class="bgBlob blob4"></div>
+      <div class="bgBlob blob5"></div>
+      <div class="G6Logo" id="G6Logo">
+        <img src="/static/assets/G6Logo.png" alt="likeag6 Logo/Home btn" />
+      </div>
+    </aside>
+
+    <!--Right panel-->
+    <main class="authPanel">
+      <div class="backBtn" id="backBtn">
+        <img src="/static/assets/BackArrow.svg" />
+      </div>
+
+      <form class="authForm">
+        <h1>Login to G6Labs</h1>
+
+        <div class="formRow">
+          <div class="formField fullWidth">
+            <label>Email</label>
+            <input
+              type="email"
+              id="emailField"
+              placeholder="Janedoe@gmail.com"
+            />
+          </div>
+        </div>
+
+        <div class="formRow">
+          <div class="formField fullWidth">
+            <label>Password</label>
+            <input
+              type="password"
+              id="passwordField"
+              placeholder="password123"
+            />
+          </div>
+        </div>
+
+        <button class="authBtn" id="loginBtn">Login</button>
+
+        <!-- ⭐ New OAuth login button ⭐ -->
+        <button type="button" class="oauthBtn" id="googleLoginBtn">
+          Login with Google
+        </button>
+
+        <p>
+          Don't have an account?
+          <span class="authLink" id="signupBtn">Sign Up</span>
+        </p>
+      </form>
+    </main>
+
+    <script src="/static/login.js"></script>
+  </body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/dashboard.css">
+</head>
+
+<!--Beginning of body content-->
+<body>
+    <aside class="leftPanel">
+        <div class="G6Logo" id="G6Logo">
+            <img src="/static/assets/G6Logo.png" alt="likeag6 logo and homepage button">
+        </div>
+
+        <h1 class="menuHeader">Menu</h1>
+
+        <div class="menuItem" id="dashboardBtn">
+                <img src="/static/assets/DashboardIcon.svg" alt="dashboard icon in leftPanel">
+                <p>Dashboard</p>
+        </div>
+        <div class="menuItem" id="profileBtn">
+            <img src="/static/assets/ProfileIcon.svg" alt="profile icon in leftPanel">
+            <p>Profile</p>
+        </div>
+        <div class="menuItem" id="customizeBtn">
+            <img src="/static/assets/CustomizeIcon.svg" alt="customize icon in leftPanel">
+            <p>Customize</p>
+        </div>
+        <div class="menuItem" id="settingsBtn">
+            <img src="/static/assets/SettingsIcon.svg" alt="settings icon in leftPanel">
+            <p>Settings</p>
+        </div>
+
+    <div class="leftPanelDivider"></div>
+        <div class="supportItem" id="supportBtn">
+            <img src="/static/assets/SupportIcon.svg" alt="support icon in lower portion of leftPanel">
+            <p>Support</p>
+        </div>
+        <div class="logoutItem" id="logoutBtn">
+            <img src="/static/assets/LogoutIcon.svg" alt="logout icon in lower portion of leftPanel">
+            <p>Logout</p>
+        </div>
+
+        <!--Top panel section-->
+    </aside>
+    <aside class="topPanel">
+        <h1 id="welcomeMessage">Welcome to G6Labs!</h1>
+    </aside>
+
+    <!--Start of main content body-->
+    <main class="mainContent">
+        <h1>Dashboard</h1>
+
+        <!--rows of cards in the main content body-->
+        <div class="contentRow">
+            <!--Profile details card-->
+            <div class="mainContentItem">
+                <p class="profileTitle">Profile Details:</p>
+                <div class="formRow">
+                    <div class="formField">
+                        <label>First Name:</label>
+                        <span class="fieldValue">John</span>
+                    </div>
+                    <div class="formField">
+                        <label>Last Name:</label>
+                        <span class="fieldValue">Doe</span>
+                    </div>
+                </div>
+                <div class="formField">
+                    <label>Registration Date:</label>
+                    <span class="fieldValue">11/11/2025</span>
+                </div>
+            </div>
+            <!--Problems completed card-->
+            <div class="mainContentItem problemsCard">
+                <img src="/static/assets/ProblemsCompleted.svg" alt="icon for problemsCard">
+                <div class="cardDivider"></div>
+                <p class="cardTitle">Problems Completed:</p>
+                <p class="cardValue">0</p>
+            </div>
+            <!--Quizzes completed card-->
+            <div class="mainContentItem quizzesCard">
+                <img src="/static/assets/QuizzesCompleted.svg" alt="icon for quizzesCard">
+                <div class="cardDivider"></div>
+                <p class="cardTitle">Quizzes Completed:</p>
+                <p class="cardValue">0</p>
+            </div>
+            <!--Trophies collected card-->
+            <div class="mainContentItem trophiesCard">
+                <img src="/static/assets/TrophiesCollected.svg" alt="icon for trophiesCard">
+                <div class="cardDivider"></div>
+                <p class="cardTitle">Trophies Collected:</p>
+                <p class="cardValue">0</p>
+            </div>
+            <!--Progression card-->
+            <div class="mainContentItem progressionCard">
+                <p class="progressionText">Progression</p>
+                <div class="progressionContent">
+                    <div class="experienceSection">
+                        <div class="xpHeader">
+                            <span class="levelText">Level 5</span>
+                            <span class="xpText">750 / 1000 XP</span>
+                        </div>
+                        <div class="xpBarContainer">
+                            <div class="xpBarFill" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                    <div class="streakSection">
+                        <img src="/static/assets/StreakIcon.svg" alt="">
+                        <div class="streakInfo">
+                            <span class="streakNumber">12</span>
+                            <span class="streakLabel">Day Streak</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Settings card-->
+            <div class="mainContentItem settingsCard">
+                <p class="passwordText">Settings</p>
+                <label class="current">Current password:</label>
+                    <input type="password" id="currentPassword"placeholder="Current password">
+                <label class="new">New password:</label>
+                    <input type="password" id="newPassword" placeholder="New password">
+                <label class="confirm">Confirm new password:</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm password">
+                <label class="currentEmail">Current email:</label>
+                    <input type="email" id="currentEmail" placeholder="Current email address">
+                <label class="newEmail">New email:</label>
+                    <input type="email" id="newEmail" placeholder="New email address">
+                <button class="saveBtn" id="saveChangesBtn">Save Changes</button>
+            </div>
+            <!--Notifications card-->
+            <div class="mainContentItem notiCard">
+                <p class="notiText">Notifications</p>
+                <div class="checkboxGroup">
+                    <label class="checkboxLabel">
+                        <input type="checkbox" id="emailCB" class="notiCheckbox">
+                        <span>Email notifications</span>
+                    </label>
+                    <label class="checkboxLabel">
+                        <input type="checkbox" id="updatesCB" class="notiCheckbox">
+                        <span>Updates</span>
+                    </label>
+                    <label class="checkboxLabel">
+                        <input type="checkbox" id="newsletterCB" class="notiCheckbox">
+                        <span>Newsletter</span>
+                    </label>
+                    <label class="checkboxLabel">
+                        <input type="checkbox" id="streakCB" class="notiCheckbox">
+                        <span>Streak</span>
+                    </label>
+                </div>
+            </div>
+            <!--Accessibility card-->
+            <div class="mainContentItem accessCard">
+                <p class="notiText">Accessibility</p>
+                <div class="checkboxGroup">
+                    <label class="checkboxLabel">
+                        <input type="checkbox" id="muteCB" class="notiCheckbox">
+                        <span>Mute</span>
+                    </label>
+                    <label class="checkboxLabel">
+                        <input type="checkbox" id="staySignedInCB" class="notiCheckbox">
+                        <span>Stay Signed In</span>
+                    </label>
+                    <label class="checkboxLabel">
+                        <input type="checkbox" id="smoothAnimationsCB" class="notiCheckbox">
+                        <span>Smooth Animations</span>
+                    </label>
+                    <label class="checkboxLabel">
+                        <input type="checkbox" id="focusCB" class="notiCheckbox">
+                        <span>Focus</span>
+                    </label>
+                </div>
+            </div>
+            <!--Avatar Selection-->
+            <div class="mainContentItem avatarCard">
+                <p class="avatarText">Choose your Avatar</p>
+                <div class="avatarChoices">
+                    <label class="avatarOption">
+                        <input type="radio" name="avatar" id="avatar1RB" value="avatar1" class="avatarRadio">
+                        <div class="avatarImage avatar1">
+                            <span class="avatarLabel">Avatar 1</span>
+                        </div>
+                    </label>
+                    <label class="avatarOption">
+                        <input type="radio" name="avatar" id="avatar2RB" value="avatar2" class="avatarRadio">
+                        <div class="avatarImage avatar2">
+                            <span class="avatarLabel">Avatar 2</span>
+                        </div>
+                    </label>
+                    <label class="avatarOption">
+                        <input type="radio" name="avatar" id="avatar3RB" value="avatar3" class="avatarRadio">
+                        <div class="avatarImage avatar3">
+                            <span class="avatarLabel">Avatar 3</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!--js connection-->
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>

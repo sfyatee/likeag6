@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G6Labs</title>
+    <link rel="stylesheet" href="/static/index.css">
+</head>
+<body>
+    <aside class="header">
+        <div class="headerRow">
+            <div class="G6Logo" id = 'G6Logo'>
+                <img src="/static/assets/G6Logo.png" alt="likeag6 logo/home button">
+            </div>
+
+            <!--header buttons-->
+            <button class="headerBtn" id="assistanceBtn">
+                <img src="/static/assets/AssistanceIcon.svg" alt="icon for assistance button">
+                <span>Assistance</span>
+            </button>
+
+            <!--Graphing btn-->
+            <button class="headerBtn" id="graphBtn">
+                <img src="/static/assets/GraphingIcon.svg" alt="icon for graphing btn">
+                <span>Graphing</span>
+            </button>
+
+            <!--Calculator btn-->
+            <button class="headerBtn" id="calculatorBtn">
+                <img src="/static/assets/CalculatorIcon.svg" alt="icon for calculator btn">
+                <span>Calculator</span>
+            </button>
+
+            <!--sign in btn-->
+            <button class="headerBtn" id="signinBtn">
+                <img src="/static/assets/LoginIcon.svg" alt="icon for login btn">
+                <span>Login</span>
+            </button>
+        </div>
+
+        <!--Search Bar-->
+        <div class="searchBarWrapper">
+            <form class="searchField" id="searchBar">
+                <img src="/static/assets/SearchBarCollapse.svg" id="collapseBtn" alt="icon to collapse search bar">
+                <input type="search" id="searchBar" placeholder="Search...">
+                <img src="/static/assets/SearchIcon.svg" id="searchBtn" alt="Icon for search bar">
+            </form>
+        </div>
+    </aside>
+
+    <main class="mainContent">
+        <div class="headerWrapper">
+            <h1>G6Labs, An Easy Way to Learn Linear Algebra</h1>
+        </div>
+
+        <!--Main Feature Cards (row)-->
+        <div class="cardsContainerRow">
+            <!--Graphing Card-->
+            <div class="featureCard" id="graphingCard">
+                <img src="/static/assets/GraphCard.svg" alt="icon for graphing card within the cards container">
+                <label>Graphing</label>
+                <span>View and manipulate 2D/3D models for visual learners</span>
+            </div>
+            <!--Calculator Card-->
+            <div class="featureCard" id="calculatorCard">
+                <img src="/static/assets/CalcCard.svg" alt="icon for calculator card within the cards container">
+                <label>Calculator</label>
+                <span>Input your own fields for custom matrix operations</span>
+            </div>
+            <!--Dashboard Card-->
+            <div class="featureCard" id="dashboardCard">
+                <img src="/static/assets/DashboardCard.svg" alt="icon for dashboard card within the cards container">
+                <label>Dashboard</label>
+                <span>Customize your learning and personalize your account</span>
+            </div>
+            <!--Problem Assistance Card-->
+            <div class="featureCard" id="problemAssistanceCard">
+                <img src="/static/assets/ProbAssistCard.svg" alt="icon for problem assistance card within the cards container">
+                <label>Problem Assistance</label>
+                <span>Step-by-step problem solving solutions to common problems</span>
+            </div>
+            <!--Practice Problems Card-->
+            <div class="featureCard" id="practiceCard">
+                <img src="/static/assets/PracticeProbCard.svg" alt="icon for practice problems card within the cards container">
+                <label>Practice Problems</label>
+                <span>Improve your skills by completing curate worksheets</span>
+            </div>
+            <!--Alternative Resources-->
+            <div class="featureCard" id="altResourcesCard">
+                <img src="/static/assets/AltResourcesCard.svg" alt="icon for alternative resources card within the cards container">
+                <label>Alternative Resources</label>
+                <span>Review videos, articles, and other supplementary information</span>
+            </div>
+        </div>
+
+        <div class="headerWrapper">
+            <h2>Explore More Features Coming Soon</h2>
+        </div>
+        
+        <div class="carouselContainer">
+            <button class="arrowBtn" id="leftArrowBtn">
+                <img src="/static/assets/LeftBtnCarousel.svg" alt="left carousel button">
+            </button>
+            <!--Additional Features Carousel-->
+            <div class="carouselWrapper">
+            <!--Journal-->
+            <div class="carouselCards">
+                <img src="/static/assets/JournalIcon.svg" alt="icon for journal in additional features carousel">
+                <label>Journal</label>
+            </div>
+            <!--Study with Friends card-->
+            <div class="carouselCards">
+                <img src="/static/assets/FriendsIcon.svg" alt="icon for studying with friends in additional features carouse">
+                <label>Study with Friends</label>
+            </div>
+            <!--Practice Quiz Card-->
+            <div class="carouselCards">
+                <img src="/static/assets/PracticeQuizIcon.svg" alt="icon for practice quizzes in additional features carouse">
+                <label>Practice Quiz</label>
+            </div>
+            <!--Calculus Card-->
+            <div class="carouselCards">
+                <img src="/static/assets/CalculusCard.svg" alt="icon for calculus in additional features carouse">
+                <label>Calculus</label>
+            </div>
+            <!--Customize Card-->
+            <div class="carouselCards">
+                <img src="/static/assets/CustomizeCard.svg" alt="icon for customizations in additional features carouse">
+                <label>Customize</label>
+            </div>
+            </div>
+            <button class="arrowBtn" id="rightArrowBtn">
+                <img src="/static/assets/RightBtnCarousel.svg" alt="right arrow button">
+            </button>
+        </div>
+
+        <!--About Us section-->
+        <div class="headerWrapper">
+            <h2>About Us</h2>
+        </div>
+
+        <!--Developer cards -->
+        <div class="devCardsWrapper">
+            <div class="devCard">
+                <p>Placeholder text...</p>
+                <div class="devProfile">
+                    <img src="/static/assets/DevIcon.svg" alt="Default dev icon">
+                    <div class="devInfo">
+                        <h3>Alfredo Catzin</h3>
+                        <p>Frontend Developer</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="devCard">
+                <p>Placeholder txt...</p>
+                <div class="devProfile">
+                    <img src="/static/assets/DevIcon.svg" alt="Default dev icon">
+                    <div class="devInfo">
+                        <h3>Minas Papazyan</h3>
+                        <p>Backend Developer</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="devCard">
+                <p>Placeholder txt...</p>
+                <div class="devProfile">
+                    <img src="/static/assets/DevIcon.svg" alt="Default dev icon">
+                    <div class="devInfo">
+                        <h3>Demian Garcia</h3>
+                        <p>Backend Developer</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="devCard">
+                <p>Placeholder txt...</p>
+                <div class="devProfile">
+                    <img src="/static/assets/DevIcon.svg" alt="Default dev icon">
+                    <div class="devInfo">
+                        <h3>Andrew Shin</h3>
+                        <p>Frontend Developer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Mission statement-->
+                    <div class="devTeamMsg">
+                <p>At G6Labs, our mission is to make Linear Algebra more accessible, engaging, and intuitive for learners of all skill levels. We combine interactive 2D and 3D visual models, intelligent problem-solving tools, and step-by-step calculations to help students truly understand the “why” behind mathematical concepts. Our team’s goal is not simply just to teach mathematics, but to transform the experience, empowering students to explore, visualize, and improve through interaction and discovery.
+                    <br> <br> <br> <br> <br> likeag6 Developer Team
+                </p>
+            </div>
+
+            <!--Review/Feedback section-->
+            <div class="reviewFeedbackWrapper">
+                <p>G6Labs</p>
+                <div class="buttonWrapper">
+                <button>Review</button>
+                <button>Feedback</button>
+                </div>
+            </div>
+
+            <!--Footer section-->
+            <footer class="footerWrapper">
+                <div class="footerInfo">
+                    <h4>G6Labs</h4>
+                    <p>likeag6</p>
+                    <p>C490 Fall/Spring 25/26</p>
+                    <!--social media icons-->
+                    <div class="socialIconsWrapper">
+                        <img src="/static/assets/FacebookIcon.svg" id="facebookBtn" alt="facebook icon in footer">
+                        <img src="/static/assets/LinkedinIcon.svg" id="linkedinBtn" alt="linkedin icon in footer">
+                        <img src="/static/assets/YoutubeIcon.svg" id="youtubeBtn" alt="youtube icon in footer">
+                        <img src="/static/assets/InstagramIcon.svg" id="instagramBtn" alt="instagram icon in footer">
+                    </div>
+                </div>
+
+                <div class="resourceWrapper">
+                    <!--Tools Section-->
+                    <div class="resources">
+                        <h4>Tools</h4>
+                        <p>Popular Problems</p>
+                        <p>Practice</p>
+                        <p>Quizzes</p>
+                    </div>
+                    <!--Apps Section-->
+                    <div class="resources">
+                        <h4>Apps</h4>
+                        <p>Desktop</p>
+                        <p>Android</p>
+                        <p>iOS</p>
+                    </div>
+                    <!--Tools Section-->
+                    <div class="resources">
+                        <h4>Company</h4>
+                        <p>Help</p>
+                        <p>Contact Us</p>
+                        <p>Newsletter</p>
+                    </div>
+                </div>
+            </footer>
+    </main>
+
+    <script src="/static/index.js"></script>
+</body>
+</html>
+</html>
