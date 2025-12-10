@@ -346,7 +346,7 @@ func main() {
 	http.HandleFunc("/api/matrix/multiply", handleMul)
 	http.HandleFunc("/api/matrix/rref", handleRREF)
 
-	port := 8080
+	port := 1023
 	url := fmt.Sprintf("http://localhost:%d", port)
 	fmt.Printf("🚀 G6Labs running on %s\n", url)
 	go openBrowser(url)
