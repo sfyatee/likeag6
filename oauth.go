@@ -73,6 +73,13 @@ func handleGoogleLogin(w http.ResponseWriter, r *http.Request) {
 
 // /auth/google/callback
 func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
+	// Check for errors from Google OAuth
+	if errMsg := r.FormValue("error"); errMsg != "" {
+		log.Printf("OAuth error: %s", errMsg)
+		http.Error(w, "OAuth error: "+errMsg+". Make sure your redirect URI is authorized in Google Cloud Console.", http.StatusBadRequest)
+		return
+	}
+
 	if r.FormValue("state") != oauthState {
 		http.Error(w, "invalid oauth state", http.StatusBadRequest)
 		return
