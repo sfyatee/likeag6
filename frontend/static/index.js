@@ -1,156 +1,109 @@
-// Check if user is logged in and hide/show login button accordingly
-window.addEventListener('DOMContentLoaded', () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const loginBtn = document.getElementById('signinBtn');
-    
-    if (user && user.avatar) {
-        // Map avatar choices to gradient styles
-        const avatarStyles = {
-            'avatar1': 'background: linear-gradient(135deg, #667eea 0%, #B87B80 100%);',
-            'avatar2': 'background: linear-gradient(135deg, #f093fb 0%, #0F4662 100%);',
-            'avatar3': 'background: linear-gradient(135deg, #4facfe 0%, #7994A0 100%);'
-        };
-        
-        // User is logged in with avatar selected, replace login button content
-        loginBtn.innerHTML = `
-            <div style="width: 32px; height: 32px; border-radius: 50%; ${avatarStyles[user.avatar] || avatarStyles['avatar1']}"></div>
-            <span>${user.fName}</span>
-        `;
-        loginBtn.onclick = () => {
-            window.location.href = '/dashboard';
-        };
-    } else if (user) {
-        // User is logged in but no avatar selected, hide login button
-        loginBtn.style.display = 'none';
-    } else {
-        // User is not logged in, show login button
-        loginBtn.style.display = '';
-    }
-});
+// ============================================
+// Index page specific functionality
+// ============================================
 
-const homeBtn = document.getElementById('G6Logo');
-const loginBtn = document.getElementById('signinBtn');
+// Element references for index page
 const dashboardBtn = document.getElementById('dashboardCard');
 const leftCarouselBtn = document.getElementById('leftArrowBtn');
 const rightCarouselBtn = document.getElementById('rightArrowBtn');
-const searchBarWrapper = document.querySelector('.searchBarWrapper');
-const searchField = document.querySelector('.searchField');
-const collapseBtn = document.getElementById('collapseBtn');
-const searchBtn = document.getElementById('searchBtn');
-const searchInput = document.querySelector('.searchField input');
-// Carousel functionality
 const carouselWrapper = document.querySelector('.carouselWrapper');
 const carouselCards = document.querySelectorAll('.carouselCards');
-let currentIndex = 0;
-const maxIndex = carouselCards.length - 3; // Show 3 cards at a time
 const graphHeaderBtn = document.getElementById('graphBtn');
 const calcHeaderBtn = document.getElementById('calculatorBtn');
 const graphCard = document.getElementById('graphingCard');
 const calcCard = document.getElementById('calculatorCard');
+const resourcesCard = document.getElementById('altResourcesCard');
 
-console.log('JavaScript loaded');
-console.log('graphHeaderBtn:', graphHeaderBtn);
-console.log('calcHeaderBtn:', calcHeaderBtn);
+// Carousel state
+let currentIndex = 0;
+const maxIndex = carouselCards.length - 3; // Show 3 cards at a time
 
-homeBtn.addEventListener('click', () => {
-    window.location.href = '/';
-});
+// Dashboard card navigation
+if (dashboardBtn) {
+    dashboardBtn.addEventListener('click', () => {
+        window.location.href = '/dashboard';
+    });
+}
 
-loginBtn.addEventListener('click', () => {
-    window.location.href = '/login';
-});
-
-dashboardBtn.addEventListener('click', () => {
-    window.location.href = '/dashboard';
-});
-
-
+// Carousel functionality
 function updateCarousel() {
-    // Calculate card width + margin
+    if (!carouselWrapper || !carouselCards.length) return;
+    
     const card = carouselCards[0];
     const cardStyle = window.getComputedStyle(card);
     const cardWidth = card.offsetWidth;
     const marginRight = parseInt(cardStyle.marginRight);
     const scrollAmount = cardWidth + marginRight;
     
-    // Scroll to position
     carouselWrapper.scrollTo({
         left: scrollAmount * currentIndex,
         behavior: 'smooth'
     });
     
-    // Update button states
-    leftCarouselBtn.disabled = currentIndex === 0;
-    rightCarouselBtn.disabled = currentIndex >= maxIndex;
-    
-    // Add/remove greyed out class
-    if (currentIndex === 0) {
-        leftCarouselBtn.style.opacity = '0.5';
-        leftCarouselBtn.style.cursor = 'not-allowed';
-    } else {
-        leftCarouselBtn.style.opacity = '1';
-        leftCarouselBtn.style.cursor = 'pointer';
+    if (leftCarouselBtn) {
+        leftCarouselBtn.disabled = currentIndex === 0;
+        leftCarouselBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
+        leftCarouselBtn.style.cursor = currentIndex === 0 ? 'not-allowed' : 'pointer';
     }
     
-    if (currentIndex >= maxIndex) {
-        rightCarouselBtn.style.opacity = '0.5';
-        rightCarouselBtn.style.cursor = 'not-allowed';
-    } else {
-        rightCarouselBtn.style.opacity = '1';
-        rightCarouselBtn.style.cursor = 'pointer';
+    if (rightCarouselBtn) {
+        rightCarouselBtn.disabled = currentIndex >= maxIndex;
+        rightCarouselBtn.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
+        rightCarouselBtn.style.cursor = currentIndex >= maxIndex ? 'not-allowed' : 'pointer';
     }
 }
 
-leftCarouselBtn.addEventListener('click', () => {
-    if (currentIndex > 0) {
-        currentIndex--;
-        updateCarousel();
-    }
-});
+if (leftCarouselBtn) {
+    leftCarouselBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        }
+    });
+}
 
-rightCarouselBtn.addEventListener('click', () => {
-    if (currentIndex < maxIndex) {
-        currentIndex++;
-        updateCarousel();
-    }
-});
+if (rightCarouselBtn) {
+    rightCarouselBtn.addEventListener('click', () => {
+        if (currentIndex < maxIndex) {
+            currentIndex++;
+            updateCarousel();
+        }
+    });
+}
 
-// Initialize carousel state
-updateCarousel();
+// Initialize carousel
+if (carouselWrapper) {
+    updateCarousel();
+}
 
-// Search bar collapse/expand functionality
+// Header navigation buttons
+if (graphHeaderBtn) {
+    graphHeaderBtn.addEventListener('click', () => {
+        window.location.href = '/graphing';
+    });
+}
 
-collapseBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    searchBarWrapper.classList.add('collapsed');
-    searchField.classList.add('collapsed');
-});
+if (calcHeaderBtn) {
+    calcHeaderBtn.addEventListener('click', () => {
+        window.location.href = '/matrixCalc';
+    });
+}
 
-searchBtn.addEventListener('click', (e) => {
-    if (searchField.classList.contains('collapsed')) {
-        e.preventDefault();
-        searchBarWrapper.classList.remove('collapsed');
-        searchField.classList.remove('collapsed');
-        searchInput.focus();
-    }
-});
+// Card navigation
+if (graphCard) {
+    graphCard.addEventListener('click', () => {
+        window.location.href = '/graphing';
+    });
+}
 
-graphHeaderBtn.addEventListener('click', () => {
-    console.log('Graph button clicked');
-    window.location.href = '/graphing';
-});
+if (calcCard) {
+    calcCard.addEventListener('click', () => {
+        window.location.href = '/matrixCalc';
+    });
+}
 
-calcHeaderBtn.addEventListener('click', () => {
-    console.log('Calculator button clicked');
-    window.location.href = '/matrixCalc';
-});
-
-graphCard.addEventListener('click', () => {
-    console.log('Graph button clicked');
-    window.location.href = '/graphing';
-});
-
-calcCard.addEventListener('click', () => {
-    console.log('Calculator button clicked');
-    window.location.href = '/matrixCalc';
-});
+if (resourcesCard) {
+    resourcesCard.addEventListener('click', () => {
+        window.location.href = '/resources';
+    });
+}

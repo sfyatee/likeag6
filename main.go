@@ -316,6 +316,7 @@ func main() {
 	loginPage := filepath.Join(frontendDir, "login.html")
 	signupPage := filepath.Join(frontendDir, "signup.html")
 	dashboardPage := filepath.Join(frontendDir, "dashboard.html")
+	resourcesPage := filepath.Join(frontendDir, "resources.html")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
@@ -331,6 +332,8 @@ func main() {
 			http.ServeFile(w, r, signupPage)
 		case "/dashboard":
 			http.ServeFile(w, r, dashboardPage)
+		case "/resources":
+			http.ServeFile(w, r, resourcesPage)
 		default:
 			http.NotFound(w, r)
 		}
@@ -341,6 +344,11 @@ func main() {
 	http.HandleFunc("/api/matrix/subtract", handleSub)
 	http.HandleFunc("/api/matrix/multiply", handleMul)
 	http.HandleFunc("/api/matrix/rref", handleRREF)
+
+	// Resources routes
+	http.HandleFunc("/api/resources/types", handleGetResourceTypes)
+	http.HandleFunc("/api/resources/tags", handleGetResourceTags)
+	http.HandleFunc("/api/resources", handleGetResources)
 
 	// Auth routes
 	http.HandleFunc("/api/auth/signup", handleSignup)

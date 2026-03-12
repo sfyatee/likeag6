@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+/* Entire page container to set boundaries of the page */
+.page-container {
+    display: flex;
+    min-height: 100vh;
+    min-width: calc(100vh - 225px);
+}
+
+/*Left filter panel container*/
+.filter-panel {
+    width: 280px;
+    min-width: 280px;
+    padding: 20px;
+    background: rgba(15, 70, 98, 0.1);
+    border-right: 1px solid #0f4662;
+}
+
+/* Styling for the headers */
+h1, h2 {
+    font-family: Quicksand;
+    font-weight: bold;
+    font-style: italic;
+    color: #0f4662;
+}
+
+/* 2-column grid for type and learning styles checkboxes */
+#typeFilters,
+#tagFilters,
+#skillFilters {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+}
+
+/* Styling for all filter options (labels) including:
+    skills (radio btns), types and tags (checkboxes) */
+#typeFilters label,
+#tagFilters label,
+#skillFilters label {
+    display: flex;
+    align-items: center;
+    margin: 2px 0;
+    padding: 4px 6px;
+    color: black;
+    font-weight: 500;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+/* Styling for filter sections headers including:
+    skill level, type, and learning styles */
+#filter-label {
+    font-family: Quicksand;
+    font-weight: 1000;
+    font-size: 20px;
+    color: #0f4662;
+    margin: 100px 5px 100px 5px;
+}
+
+/* Style on hover effect for radio buttons/checkboxes */
+.filter-options label:hover {
+    background: rgba(15, 70, 98, 0.2);
+    border-radius: 4px;
+}
+
+/* Separate styling for radio btns to display as two columns */
+#skillFilters  label {
+    display: block;
+}
+
+/* Styling for the names of the labels for Learning Styles (tags) */
+.tag-badge {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Style default radio to fit color scheme */
+.filter-options input[type="radio"],
+.filter-options input[type="checkbox"] {
+    accent-color: #0f4662;
+    margin-right: 8px;
+}
+
+/* Styling for apply/clean btn in the filter panel*/
+.clear-filter-btn, .apply-filter-btn {
+    background: #0f4662;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 40px;
+    margin: 10px;
+    font-family: Quicksand;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Hover fx for btn */
+.clear-filter-btn:hover, .apply-filter-btn:hover {
+    background: #0f4662;
+    opacity: 85%;
+}
+
+/* Styling for main content wrapper */
+.resources-content {
+    flex: 1;
+    padding: 30px;
+}
+
+/* Styling for resources grid */
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Styling for resource cards in the results panel */
+.resource-card {
+    display: flex;
+    flex-direction: column;
+    height: 220px;
+    /* border: 1px solid #0f4662; */
+    border-radius: 8px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.resource-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.resource-card h3 {
+    color: #0f4662;
+    margin: 0 0 10px 0;
+    text-align: center;
+    /* Limit to 2 lines with ellipsis */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 2.4em;
+}
+
+.resource-card p {
+    flex: 1;
+    text-align: center;
+    margin: 0 0 10px 0;
+    /* Limit to 3 lines with ellipsis */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.resource-card .skill-badge {
+    color: #7994A0;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: capitalize;
+    margin-bottom: 10px;
+}
+
+.resource-card a {
+    margin-top: auto;
+    color: #0f4662;
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+}
