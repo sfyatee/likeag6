@@ -1,0 +1,127 @@
+.assistPage{
+  margin: 0 auto;
+  max-width: 1100px;
+  padding: 0 24px 48px;
+}
+
+.controlsRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  margin: 18px 0 12px;
+}
+
+.smallHint{
+  color:#7994A0;
+  font-family: Quicksand;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#clearBtn{
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #808080;
+  background: #fff;
+  color: #0f4662;
+  font-family: Quicksand;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+#clearBtn:hover{
+  border: 1px solid yellow;
+}
+
+.chatShell{
+  background: rgba(121, 148, 160, 0.18);
+  border: 1px solid #808080;
+  border-radius: 12px;
+  padding: 14px;
+  display:flex;
+  flex-direction:column;
+
+  /* approximate fill under header */
+  min-height: 520px;
+  height: calc(100vh - 380px);
+}
+
+.chatMessages{
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 2px;
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+}
+
+.msg{
+  max-width: 82%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-family: Quicksand;
+  font-size: 16px;
+  line-height: 1.35;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.msg.user{
+  align-self: flex-end;
+  background: #0f4662;
+  color: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.msg.assistant{
+  align-self: flex-start;
+  background: #fff;
+  color: #0f4662;
+  border: 1px solid #e6e6e6;
+}
+
+.composer{
+  display:flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+#prompt{
+  flex: 1;
+  min-height: 64px;
+  resize: vertical;
+  border-radius: 12px;
+  border: 1px solid #808080;
+  padding: 12px;
+  font-family: Quicksand;
+  font-size: 16px;
+  outline: none;
+}
+
+#sendBtn{
+  width: 150px;
+  border-radius: 12px;
+  border: 1px solid #808080;
+  background: #7994A0;
+  color: #fff;
+  font-family: Quicksand;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+#sendBtn:hover{
+  border: 1px solid yellow;
+}
+#sendBtn:disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#err{
+  min-height: 18px;
+  margin-top: 10px;
+  color: #b00020;
+  font-family: Quicksand;
+  font-weight: 700;
+}

@@ -296,10 +296,10 @@ func handleRREF(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Initialize database connection
-	if err := InitDB(); err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
-	}
-	defer CloseDB()
+//       if err := InitDB(); err != nil {
+//               log.Fatalf("Failed to connect to database: %v", err)
+//       }
+//       defer CloseDB()
 
 	// Serve frontend files
 	frontendDir := "frontend"
@@ -316,6 +316,7 @@ func main() {
 	loginPage := filepath.Join(frontendDir, "login.html")
 	signupPage := filepath.Join(frontendDir, "signup.html")
 	dashboardPage := filepath.Join(frontendDir, "dashboard.html")
+	assistPage := filepath.Join(frontendDir, "problemAssistance.html")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
@@ -325,6 +326,8 @@ func main() {
 			http.ServeFile(w, r, calcPage)
 		case "/graphing":
 			http.ServeFile(w, r, graphingPage)
+		case "/problemAssistance":
+			http.ServeFile(w, r, assistPage)
 		case "/login":
 			http.ServeFile(w, r, loginPage)
 		case "/signup":
@@ -342,9 +345,12 @@ func main() {
 	http.HandleFunc("/api/matrix/multiply", handleMul)
 	http.HandleFunc("/api/matrix/rref", handleRREF)
 
+	http.HandleFunc("/api/assist/health", handleAssistHealth)
+	http.HandleFunc("/api/assist/chat", handleAssistChat)
+
 	// Auth routes
-	http.HandleFunc("/api/auth/signup", handleSignup)
-	http.HandleFunc("/api/auth/login", handleLogin)
+	//http.HandleFunc("/api/auth/signup", handleSignup)
+	//http.HandleFunc("/api/auth/login", handleLogin)
 
 	// Start
 	port := 8080

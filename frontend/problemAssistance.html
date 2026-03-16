@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G6Labs — Problem Assistance</title>
+
+  <!-- reuse your landing page header styles -->
+  <link rel="stylesheet" href="/static/index.css">
+  <link rel="stylesheet" href="/static/problemAssistance.css">
+</head>
+<body>
+  <!-- Same header structure as landing page -->
+  <aside class="header">
+    <div class="headerRow">
+      <div class="G6Logo" id="G6Logo">
+        <img src="/static/assets/G6Logo.png" alt="G6Labs home button">
+      </div>
+
+      <button class="headerBtn" id="assistanceBtn">
+        <img src="/static/assets/AssistanceIcon.svg" alt="">
+        <span>Assistance</span>
+      </button>
+
+      <button class="headerBtn" id="graphBtn">
+        <img src="/static/assets/GraphingIcon.svg" alt="">
+        <span>Graphing</span>
+      </button>
+
+      <button class="headerBtn" id="calculatorBtn">
+        <img src="/static/assets/CalculatorIcon.svg" alt="">
+        <span>Calculator</span>
+      </button>
+
+      <button class="headerBtn" id="signinBtn">
+        <img src="/static/assets/LoginIcon.svg" alt="">
+        <span>Login</span>
+      </button>
+    </div>
+
+    <!-- Optional search bar (keeps your layout consistent) -->
+    <div class="searchBarWrapper">
+      <form class="searchField" id="searchBar">
+        <img src="/static/assets/SearchBarCollapse.svg" id="collapseBtn" alt="collapse search bar">
+        <input type="search" placeholder="Search...">
+        <img src="/static/assets/SearchIcon.svg" id="searchBtn" alt="search icon">
+      </form>
+    </div>
+  </aside>
+
+  <main class="mainContent">
+    <div class="headerWrapper">
+      <h2>Problem Assistance</h2>
+    </div>
+
+    <section class="assistPage">
+      <div class="controlsRow">
+        <div class="smallHint">
+          Tip: provide matrices as JSON like <b>[[1,2],[3,4]]</b>. Use Ctrl+Enter to send.
+        </div>
+        <button id="clearBtn" type="button">Clear chat</button>
+      </div>
+
+      <div class="chatShell">
+        <div id="chatMessages" class="chatMessages"></div>
+
+        <div class="composer">
+          <textarea id="prompt" placeholder="Ask a linear algebra question…"></textarea>
+          <button id="sendBtn" type="button">Send</button>
+        </div>
+
+        <div id="err"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Global script (now safe on multiple pages) -->
+  <script src="/static/index.js" defer></script>
+  <script src="/static/problemAssistance.js" defer></script>
+</body>
+</html>
