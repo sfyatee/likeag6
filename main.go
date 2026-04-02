@@ -301,6 +301,8 @@ func main() {
 	}
 	defer CloseDB()
 
+	InitOAuth()
+
 	// Serve frontend files
 	frontendDir := "frontend"
 
@@ -356,8 +358,12 @@ func main() {
 	http.HandleFunc("/api/resources", handleGetResources)
 
 	// Auth routes
-	//http.HandleFunc("/api/auth/signup", handleSignup)
-	//http.HandleFunc("/api/auth/login", handleLogin)
+	http.HandleFunc("/api/auth/signup", handleSignup)
+	http.HandleFunc("/api/auth/login", handleLogin)
+
+	// OAuth routes
+	http.HandleFunc("/auth/google/login", handleGoogleLogin)
+	http.HandleFunc("/auth/google/callback", handleGoogleCallback)
 
 	// Start
 	port := 8080

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -81,6 +82,42 @@ func getUserByEmail(email string) (*User, error) {
 func updateUserAvatar(email, avatar string) error {
 	_, err := db.Exec("UPDATE users SET avatar = ? WHERE email = ?", avatar, email)
 	return err
+}
+
+func getOrCreateOAuthUser(fName, lName, email, avatar string) (*User, error) {
+	user, err := getUserByEmail(email)
+	if err == nil {
+		// Update avatar if it changed.
+		if avatar != "" && user.Avatar != avatar {
+			_ = updateUserAvatar(email, avatar)
+			user.Avatar = avatar
+		}
+		return user, nil
+	}
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+
+	result, err := db.Exec(
+		"INSERT INTO users (first_name, last_name, email, password_hash, avatar) VALUES (?, ?, ?, ?, ?)",
+		fName, lName, email, "", avatar,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	return &User{
+		ID:     int(id),
+		FName:  fName,
+		LName:  lName,
+		Email:  email,
+		Avatar: avatar,
+	}, nil
 }
 
 // API Handlers
