@@ -52,6 +52,7 @@ onClick('dashboardCard', () => window.location.href = '/dashboard');
 
 // NEW: Problem Assistance card -> Problem Assistance page
 onClick('problemAssistanceCard', () => window.location.href = '/problemAssistance');
+onClick('altResourcesCard', () => window.location.href = '/resources');
 
 // Carousel functionality (landing page only)
 (function initCarousel() {
@@ -71,61 +72,76 @@ onClick('problemAssistanceCard', () => window.location.href = '/problemAssistanc
     const cardWidth = card.offsetWidth;
     const marginRight = parseInt(cardStyle.marginRight || '0', 10);
     const scrollAmount = cardWidth + marginRight;
-
     carouselWrapper.scrollTo({
       left: scrollAmount * currentIndex,
       behavior: 'smooth'
     });
-
-    leftCarouselBtn.disabled = currentIndex === 0;
-    rightCarouselBtn.disabled = currentIndex >= maxIndex;
-
-    leftCarouselBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
-    leftCarouselBtn.style.cursor = currentIndex === 0 ? 'not-allowed' : 'pointer';
-
-    rightCarouselBtn.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
-    rightCarouselBtn.style.cursor = currentIndex >= maxIndex ? 'not-allowed' : 'pointer';
-  }
-
-  leftCarouselBtn.addEventListener('click', () => {
-    if (currentIndex > 0) {
-      currentIndex--;
-      updateCarousel();
+    
+    if (leftCarouselBtn) {
+        leftCarouselBtn.disabled = currentIndex === 0;
+        leftCarouselBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
+        leftCarouselBtn.style.cursor = currentIndex === 0 ? 'not-allowed' : 'pointer';
     }
-  });
-
-  rightCarouselBtn.addEventListener('click', () => {
-    if (currentIndex < maxIndex) {
-      currentIndex++;
-      updateCarousel();
+    
+    if (rightCarouselBtn) {
+        rightCarouselBtn.disabled = currentIndex >= maxIndex;
+        rightCarouselBtn.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
+        rightCarouselBtn.style.cursor = currentIndex >= maxIndex ? 'not-allowed' : 'pointer';
     }
-  });
+}
 
-  updateCarousel();
-})();
+if (leftCarouselBtn) {
+    leftCarouselBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        }
+    });
+}
 
-// Search bar collapse/expand (landing page / assistance page)
-(function initSearchBar() {
-  const searchBarWrapper = document.querySelector('.searchBarWrapper');
-  const searchField = document.querySelector('.searchField');
-  const collapseBtn = $('collapseBtn');
-  const searchBtn = $('searchBtn');
-  const searchInput = document.querySelector('.searchField input');
+if (rightCarouselBtn) {
+    rightCarouselBtn.addEventListener('click', () => {
+        if (currentIndex < maxIndex) {
+            currentIndex++;
+            updateCarousel();
+        }
+    });
+}
 
-  if (!searchBarWrapper || !searchField || !collapseBtn || !searchBtn || !searchInput) return;
+// Initialize carousel
+if (carouselWrapper) {
+    updateCarousel();
+}
 
-  collapseBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    searchBarWrapper.classList.add('collapsed');
-    searchField.classList.add('collapsed');
-  });
+// Header navigation buttons
+if (graphHeaderBtn) {
+    graphHeaderBtn.addEventListener('click', () => {
+        window.location.href = '/graphing';
+    });
+}
 
-  searchBtn.addEventListener('click', (e) => {
-    if (searchField.classList.contains('collapsed')) {
-      e.preventDefault();
-      searchBarWrapper.classList.remove('collapsed');
-      searchField.classList.remove('collapsed');
-      searchInput.focus();
-    }
-  });
+if (calcHeaderBtn) {
+    calcHeaderBtn.addEventListener('click', () => {
+        window.location.href = '/matrixCalc';
+    });
+}
+
+// Card navigation
+if (graphCard) {
+    graphCard.addEventListener('click', () => {
+        window.location.href = '/graphing';
+    });
+}
+
+if (calcCard) {
+    calcCard.addEventListener('click', () => {
+        window.location.href = '/matrixCalc';
+    });
+}
+
+if (resourcesCard) {
+    resourcesCard.addEventListener('click', () => {
+        window.location.href = '/resources';
+    });
+}
 })();

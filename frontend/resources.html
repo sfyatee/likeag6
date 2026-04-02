@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplemental Learning Hub</title>
+    <link rel="stylesheet" href="/static/index.css">
+    <link rel="stylesheet" href="/static/resources.css">
+</head>
+<body>
+        <aside class="header">
+        <div class="headerRow">
+            <div class="G6Logo" id = 'G6Logo'>
+                <img src="/static/assets/G6Logo.png" alt="likeag6 logo/home button">
+            </div>
+
+            <!--sign in btn-->
+            <button class="headerBtn" id="signinBtn">
+                <img src="/static/assets/LoginIcon.svg" alt="icon for login btn">
+                <span>Login</span>
+            </button>
+        </div>
+
+        <!--Search Bar-->
+        <div class="searchBarWrapper">
+            <form class="searchField" id="searchBar">
+                <img src="/static/assets/SearchBarCollapse.svg" id="collapseBtn" alt="icon to collapse search bar">
+                <input type="search" id="searchBar" placeholder="Search...">
+                <img src="/static/assets/SearchIcon.svg" id="searchBtn" alt="Icon for search bar">
+            </form>
+        </div>
+    </aside>
+
+    <div class="page-container">
+        <!--Left Panel (Filter)-->
+        <aside class="filter-panel">
+            <h2>Filters</h2>
+            <!--Skill Level-->
+            <div class="filter-section">
+                <label id="filter-label">Skill Level</label>
+                <div class="filter-options" id="skillFilters">
+                    <label><input type="radio" name="skill" value="">All</label>
+                    <label><input type="radio" name="skill" value="beginner">Beginner</label>
+                    <label><input type="radio" name="skill" value="Intermediate">Intermediate</label>
+                    <label><input type="radio" name="skill" value="Advanced">Advanced</label>
+                </div>
+            </div>
+
+            <!--Resource Types-->
+            <div class="filter-section">
+                <label id="filter-label">Type</label>
+                <div class="filter-options" id="typeFilters"></div>
+            </div>
+
+            <!--Tags-->
+            <div class="filter-section">
+                <label id="filter-label">Learning Styles</label>
+                <div class="filter-options" id="tagFilters"></div>
+            </div>
+
+            <button class="apply-filter-btn" id="applyFilters">Apply</button>
+            <button class="clear-filter-btn" id="clearFilters">Clear</button>
+        </aside>
+
+        <!--Main content (grid)-->
+        <main class="resources-content">
+            <h1>Supplemental Learning Hub</h1>
+            <p class="results-count"><span id="resultCount">0</span> resources found</p>
+            <div class="resources-grid" id="resourcesGrid">
+
+            </div>
+        </main>
+    </div>
+
+
+
+    <script src="/static/common.js"></script>
+    <script src="/static/resources.js"></script>
+</body>
+</html>
