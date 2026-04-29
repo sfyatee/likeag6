@@ -9,7 +9,7 @@ import (
 
 // ======== Types ========
 
-// ResourceType represents a resource type from the database
+// ResourceType represents one category from the resource_types lookup table.
 type ResourceType struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
@@ -17,7 +17,7 @@ type ResourceType struct {
 	Description string `json:"description,omitempty"`
 }
 
-// ResourceTag represents a resource tag from the database
+// ResourceTag represents one learning-style tag from the resource_tags table.
 type ResourceTag struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`
@@ -25,7 +25,7 @@ type ResourceTag struct {
 	Color string `json:"color"`
 }
 
-// Resource represents a row in the database in the resources table with the following attributes
+// Resource represents one row from the resources table returned by listing queries.
 type Resource struct {
 	ID            int       `json:"id"`
 	Title         string    `json:"title"`
@@ -46,7 +46,7 @@ type Resource struct {
 
 // ======== DB Functions ========
 
-// GetResourceTypes fetches all resource types from the database
+// GetResourceTypes returns all resource categories available for filtering.
 func GetResourceTypes() ([]ResourceType, error) {
 	rows, err := db.Query("SELECT id, name, COALESCE(icon, ''), COALESCE(description, '') FROM resource_types")
 	if err != nil {
@@ -65,7 +65,7 @@ func GetResourceTypes() ([]ResourceType, error) {
 	return types, rows.Err()
 }
 
-// GetResourceTags fetches all resource tags from the database
+// GetResourceTags returns all learning tags available for filtering.
 func GetResourceTags() ([]ResourceTag, error) {
 	rows, err := db.Query("SELECT id, name, slug, color FROM resource_tags")
 	if err != nil {
@@ -84,8 +84,13 @@ func GetResourceTags() ([]ResourceTag, error) {
 	return tags, rows.Err()
 }
 
-// GetResources fetches all of the resources in the database
-func GetResources(skill string, types []int, tags []int) ([]Resource, error) {
+// GetResources returns active resources filtered by optional skill level, type IDs,
+// tag IDs, and search text.
+//
+// Search behavior:
+// - queries shorter than 3 characters use LIKE matching
+// - longer queries use FULLTEXT MATCH ... AGAINST
+func GetResources(skill string, types []int, tags []int, search string) ([]Resource, error) {
 	query := `
         SELECT DISTINCT r.id, r.title, COALESCE(r.description,''), r.url,
         r.type_id, r.skill_level, COALESCE(r.author,''),
@@ -98,6 +103,22 @@ func GetResources(skill string, types []int, tags []int) ([]Resource, error) {
     `
 
 	var args []interface{}
+
+	// search filter - try FULLTEXT first, fallback to LIKE if needed
+	// columns must exactly match the FULLTEXT INDEX idx_search (title, description, author, source_name)
+	if search != "" {
+		// Use LIKE for short queries (FULLTEXT has minimum word length) or as fallback
+		if len(search) < 3 {
+			// LIKE search for short terms
+			query += " AND (r.title LIKE ? OR r.description LIKE ? OR r.author LIKE ? OR r.source_name LIKE ?)"
+			pattern := "%" + search + "%"
+			args = append(args, pattern, pattern, pattern, pattern)
+		} else {
+			// FULLTEXT search for longer terms
+			query += " AND MATCH(r.title, r.description, r.author, r.source_name) AGAINST(? IN NATURAL LANGUAGE MODE)"
+			args = append(args, search)
+		}
+	}
 
 	// add skill level to query when selected
 	if skill != "" {
@@ -148,7 +169,8 @@ func GetResources(skill string, types []int, tags []int) ([]Resource, error) {
 }
 
 // ======== HTTP Handlers ========
-// handler for types filter
+
+// handleGetResourceTypes serves GET /api/resources/types.
 func handleGetResourceTypes(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "use GET"})
@@ -163,7 +185,7 @@ func handleGetResourceTypes(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, types)
 }
 
-// handler for tags filter (learning styles)
+// handleGetResourceTags serves GET /api/resources/tags.
 func handleGetResourceTags(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "use GET"})
@@ -178,7 +200,8 @@ func handleGetResourceTags(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, tags)
 }
 
-// handler to obtain the actual data from the database for grid display with filters selected
+// handleGetResources serves GET /api/resources and applies query-string filters
+// for skill level, type IDs, tag IDs, and text search.
 func handleGetResources(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "use GET"})
@@ -186,6 +209,7 @@ func handleGetResources(w http.ResponseWriter, r *http.Request) {
 	}
 
 	skill := r.URL.Query().Get("skill_level")
+	search := r.URL.Query().Get("q")
 
 	var types []int
 	if typesStr := r.URL.Query().Get("types"); typesStr != "" {
@@ -205,7 +229,7 @@ func handleGetResources(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	resources, err := GetResources(skill, types, tags)
+	resources, err := GetResources(skill, types, tags, search)
 
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})

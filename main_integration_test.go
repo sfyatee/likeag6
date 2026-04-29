@@ -9,54 +9,207 @@ import (
 	"testing"
 )
 
-// Integration Test for /api/matrix/add
-func TestAddEndpoint(t *testing.T) {
-	// input matrices
-	reqBody := TwoMatrixRequest{
-		A: Matrix{{1, 2}, {3, 4}},
-		B: Matrix{{5, 6}, {7, 8}},
-	}
-	bodyBytes, err := json.Marshal(reqBody)
+// ============ INTEGRATION TEST HELPERS ============
 
-	if err != nil {
-		t.Fatalf("Failed to marshal request: %v", err)
-	}
+// endpointTestCase defines one HTTP handler test case with request and expected response data.
+type endpointTestCase struct {
+	name           string
+	method         string
+	body           interface{}
+	handler        http.HandlerFunc
+	expectedStatus int
+	expectedResult Matrix
+	expectError    bool
+}
 
-	// Create a new HTTP POST request
-	req := httptest.NewRequest(http.MethodPost, "/api/matrix/add", bytes.NewReader(bodyBytes))
-	req.Header.Set("Content-Type", "application/json")
+// runEndpointTests executes table-driven tests against a handler function.
+func runEndpointTests(t *testing.T, tests []endpointTestCase, endpoint string) {
+	t.Helper()
+	for _, tt := range tests {
+		tt := tt // capture range variable
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	// Create a ResponseRecorder to capture the response
-	rr := httptest.NewRecorder()
+			var bodyBytes []byte
+			var err error
+			if tt.body != nil {
+				bodyBytes, err = json.Marshal(tt.body)
+				if err != nil {
+					t.Fatalf("Failed to marshal request: %v", err)
+				}
+			}
 
-	// call the handler directly
-	handleAdd(rr, req)
+			req := httptest.NewRequest(tt.method, endpoint, bytes.NewReader(bodyBytes))
+			req.Header.Set("Content-Type", "application/json")
+			rr := httptest.NewRecorder()
 
-	// check the status code
-	if rr.Code != http.StatusOK {
-		t.Fatalf("Expected status 200, observed: %d", rr.Code)
-	}
+			tt.handler(rr, req)
 
-	// parse the response
-	var response OneMatrixResponse
-	if err := json.Unmarshal(rr.Body.Bytes(), &response); err != nil {
-		t.Fatalf("Failed to unmarshal response: %v", err)
-	}
+			if rr.Code != tt.expectedStatus {
+				t.Fatalf("Expected status %d, observed: %d", tt.expectedStatus, rr.Code)
+			}
 
-	// define expected result
-	expected := Matrix{{6, 8}, {10, 12}}
+			// Only parse response for successful requests
+			if tt.expectedStatus == http.StatusOK {
+				var response OneMatrixResponse
+				if err := json.Unmarshal(rr.Body.Bytes(), &response); err != nil {
+					t.Fatalf("Failed to unmarshal response: %v", err)
+				}
 
-	// compare
-	if !reflect.DeepEqual(response.Result, expected) {
-		t.Errorf("Result = %v, expected: %v", response.Result, expected)
-	}
-	if response.Error != "" {
-		t.Errorf("Unexpected error in response: %v", response.Error)
+				if !reflect.DeepEqual(response.Result, tt.expectedResult) {
+					t.Errorf("Result = %v, expected: %v", response.Result, tt.expectedResult)
+				}
+				if response.Error != "" && !tt.expectError {
+					t.Errorf("Unexpected error in response: %v", response.Error)
+				}
+			}
+		})
 	}
 }
 
-// Regression-style test for a previously existing bug where the /api/matrix/add endpoint incorrectly allowed addition of mismatching matrices
+// ============ ADD ENDPOINT TESTS ============
+
+// TestAddEndpoint verifies /api/matrix/add behavior for success, bad input, and method validation.
+func TestAddEndpoint(t *testing.T) {
+	t.Parallel()
+	tests := []endpointTestCase{
+		{
+			name:   "Valid addition of 2x2 matrices",
+			method: http.MethodPost,
+			body: TwoMatrixRequest{
+				A: Matrix{{1, 2}, {3, 4}},
+				B: Matrix{{5, 6}, {7, 8}},
+			},
+			handler:        handleAdd,
+			expectedStatus: http.StatusOK,
+			expectedResult: Matrix{{6, 8}, {10, 12}},
+			expectError:    false,
+		},
+		{
+			name:   "Mismatched dimensions",
+			method: http.MethodPost,
+			body: TwoMatrixRequest{
+				A: Matrix{{1, 2, 3}},
+				B: Matrix{{4, 5}},
+			},
+			handler:        handleAdd,
+			expectedStatus: http.StatusBadRequest,
+			expectError:    true,
+		},
+		{
+			name:           "Wrong HTTP method (GET)",
+			method:         http.MethodGet,
+			body:           nil,
+			handler:        handleAdd,
+			expectedStatus: http.StatusMethodNotAllowed,
+			expectError:    true,
+		},
+	}
+
+	runEndpointTests(t, tests, "/api/matrix/add")
+}
+
+// ============ SUBTRACT ENDPOINT TESTS ============
+
+// TestSubEndpoint verifies /api/matrix/subtract behavior for success and method validation.
+func TestSubEndpoint(t *testing.T) {
+	t.Parallel()
+	tests := []endpointTestCase{
+		{
+			name:   "Valid subtraction of 2x2 matrices",
+			method: http.MethodPost,
+			body: TwoMatrixRequest{
+				A: Matrix{{5, 6}, {7, 8}},
+				B: Matrix{{1, 2}, {3, 4}},
+			},
+			handler:        handleSub,
+			expectedStatus: http.StatusOK,
+			expectedResult: Matrix{{4, 4}, {4, 4}},
+			expectError:    false,
+		},
+		{
+			name:           "Wrong HTTP method (GET)",
+			method:         http.MethodGet,
+			body:           nil,
+			handler:        handleSub,
+			expectedStatus: http.StatusMethodNotAllowed,
+			expectError:    true,
+		},
+	}
+
+	runEndpointTests(t, tests, "/api/matrix/sub")
+}
+
+// ============ MULTIPLY ENDPOINT TESTS ============
+
+// TestMulEndpoint verifies /api/matrix/multiply behavior for compatible and incompatible shapes.
+func TestMulEndpoint(t *testing.T) {
+	t.Parallel()
+	tests := []endpointTestCase{
+		{
+			name:   "Valid multiplication of 2x2 matrices",
+			method: http.MethodPost,
+			body: TwoMatrixRequest{
+				A: Matrix{{1, 2}, {3, 4}},
+				B: Matrix{{5, 6}, {7, 8}},
+			},
+			handler:        handleMul,
+			expectedStatus: http.StatusOK,
+			expectedResult: Matrix{{19, 22}, {43, 50}},
+			expectError:    false,
+		},
+		{
+			name:   "Incompatible dimensions for multiplication",
+			method: http.MethodPost,
+			body: TwoMatrixRequest{
+				A: Matrix{{1, 2, 3}},
+				B: Matrix{{4, 5}},
+			},
+			handler:        handleMul,
+			expectedStatus: http.StatusBadRequest,
+			expectError:    true,
+		},
+	}
+
+	runEndpointTests(t, tests, "/api/matrix/mul")
+}
+
+// ============ RREF ENDPOINT TESTS ============
+
+// TestRREFEndpoint verifies /api/matrix/rref behavior and method enforcement.
+func TestRREFEndpoint(t *testing.T) {
+	t.Parallel()
+	tests := []endpointTestCase{
+		{
+			name:   "Valid RREF of 2x2 matrix",
+			method: http.MethodPost,
+			body: OneMatrixRequest{
+				A: Matrix{{1, 2}, {3, 4}},
+			},
+			handler:        handleRREF,
+			expectedStatus: http.StatusOK,
+			expectedResult: Matrix{{1, 0}, {0, 1}},
+			expectError:    false,
+		},
+		{
+			name:           "Wrong HTTP method (PUT)",
+			method:         http.MethodPut,
+			body:           nil,
+			handler:        handleRREF,
+			expectedStatus: http.StatusMethodNotAllowed,
+			expectError:    true,
+		},
+	}
+
+	runEndpointTests(t, tests, "/api/matrix/rref")
+}
+
+// ============ REGRESSION TESTS ============
+
+// TestAddEndpointRegression_MismatchedDimensions guards against a previous bug
+// where mismatched matrices were accepted by /api/matrix/add.
 func TestAddEndpointRegression_MismatchedDimensions(t *testing.T) {
+	t.Parallel()
 	// Prepare input matrices with mismatched dimensions
 	reqBody := TwoMatrixRequest{
 		A: Matrix{{1, 2, 3}},

@@ -170,3 +170,69 @@ h1, h2 {
     font-weight: 600;
     text-align: center;
 }
+
+/* ============ SEARCH STATES ============ */
+
+/* Loading state */
+.resources-grid.loading {
+    opacity: 0.5;
+    pointer-events: none;
+    position: relative;
+}
+
+.resources-grid.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0f4662;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* No results message */
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-size: 1.1em;
+}
+
+/* Error message */
+.search-error {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: #c0392b;
+    font-size: 1.1em;
+}
+
+/* Search term highlight */
+mark {
+    background-color: #fff3cd;
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* Invalid search input shake animation */
+.searchField input.invalid {
+    animation: shake 0.3s ease-in-out;
+    border-color: #c0392b;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}

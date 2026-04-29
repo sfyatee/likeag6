@@ -12,7 +12,11 @@ import (
 
 var db *sql.DB
 
-// InitDB initializes the database connection
+// InitDB initializes the global MySQL connection used by repository functions.
+//
+// It attempts to load environment variables from .env, applies development
+// defaults when DB_* values are missing, verifies connectivity with Ping, and
+// sets conservative pool limits.
 func InitDB() error {
 	// Load .env file
 	if err := godotenv.Load(); err != nil {
@@ -63,7 +67,7 @@ func InitDB() error {
 	return nil
 }
 
-// CloseDB closes the database connection
+// CloseDB closes the global database handle when it has been initialized.
 func CloseDB() {
 	if db != nil {
 		db.Close()

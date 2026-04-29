@@ -46,6 +46,17 @@ if (loginBtn && !localStorage.getItem('user')) {
     });
 }
 
+// ============ SEARCH FUNCTIONALITY ============
+
+// Debounce helper - waits until user stops typing
+function debounce(fn, delay) {
+    let timer;
+    return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
+
 // Search bar collapse/expand functionality
 const searchBarWrapper = document.querySelector('.searchBarWrapper');
 const searchField = document.querySelector('.searchField');
@@ -71,3 +82,43 @@ if (searchBtn && searchField && searchBarWrapper) {
         }
     });
 }
+
+// Minimum characters required to trigger search
+const COMMON_MIN_SEARCH_CHARS = 2;
+
+// Universal search handler - works on any page
+if (searchInput) {
+    const isResourcesPage = window.location.pathname === '/resources';
+    
+    searchInput.addEventListener('input', debounce((e) => {
+        const query = e.target.value.trim();
+        
+        if (isResourcesPage && typeof currentFilters !== 'undefined' && typeof fetchResources === 'function') {
+            // On resources page: filter in-place
+            // Allow empty query (to clear) or queries meeting minimum length
+            if (query.length === 0 || query.length >= COMMON_MIN_SEARCH_CHARS) {
+                currentFilters.search = query;
+                fetchResources();
+            }
+        }
+    }, 300));
+    
+    // Handle Enter key to navigate/search
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            
+            // On other pages: redirect to resources with search query (if valid length)
+            if (!isResourcesPage && query.length >= COMMON_MIN_SEARCH_CHARS) {
+                window.location.href = `/resources?q=${encodeURIComponent(query)}`;
+            } else if (!isResourcesPage && query.length > 0 && query.length < COMMON_MIN_SEARCH_CHARS) {
+                // Provide feedback for too-short queries
+                searchInput.classList.add('invalid');
+                setTimeout(() => searchInput.classList.remove('invalid'), 500);
+            }
+        }
+    });
+}
+
+

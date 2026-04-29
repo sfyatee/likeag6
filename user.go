@@ -8,6 +8,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// User represents an application account persisted in the users table.
+// Password carries the stored bcrypt hash when loaded for verification and
+// is omitted from JSON responses.
 type User struct {
 	ID       int    `json:"id"`
 	FName    string `json:"fName"`
@@ -17,19 +20,21 @@ type User struct {
 	Avatar   string `json:"avatar"`
 }
 
-// hashPassword generates a bcrypt hash of the password
+// hashPassword converts a plaintext password into a bcrypt hash suitable for storage.
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(bytes), err
 }
 
-// checkPasswordHash compares a password with a hash
+// checkPasswordHash reports whether password matches a stored bcrypt hash.
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
 
-// createUser inserts a new user into the database
+// createUser hashes password and inserts a new row in the users table.
+//
+// It returns the newly created user model without exposing plaintext credentials.
 func createUser(fName, lName, email, password string) (*User, error) {
 	// Hash the password
 	hashedPassword, err := hashPassword(password)
@@ -60,7 +65,8 @@ func createUser(fName, lName, email, password string) (*User, error) {
 	}, nil
 }
 
-// getUserByEmail retrieves a user from the database by email
+// getUserByEmail fetches one user by email and includes the stored password hash
+// in User.Password for login verification.
 func getUserByEmail(email string) (*User, error) {
 	user := &User{}
 	var passwordHash string
@@ -78,12 +84,14 @@ func getUserByEmail(email string) (*User, error) {
 	return user, nil
 }
 
-// updateUserAvatar updates the user's avatar in the database
+// updateUserAvatar updates the avatar URL for the user identified by email.
 func updateUserAvatar(email, avatar string) error {
 	_, err := db.Exec("UPDATE users SET avatar = ? WHERE email = ?", avatar, email)
 	return err
 }
 
+// getOrCreateOAuthUser returns the existing user for email or creates one if none
+// exists, which supports first-time Google OAuth logins.
 func getOrCreateOAuthUser(fName, lName, email, avatar string) (*User, error) {
 	user, err := getUserByEmail(email)
 	if err == nil {
@@ -122,6 +130,7 @@ func getOrCreateOAuthUser(fName, lName, email, avatar string) (*User, error) {
 
 // API Handlers
 
+// SignupRequest is the expected JSON payload for account creation.
 type SignupRequest struct {
 	FName    string `json:"fName"`
 	LName    string `json:"lName"`
@@ -129,12 +138,21 @@ type SignupRequest struct {
 	Password string `json:"password"`
 }
 
+// AuthResponse is the JSON envelope returned by signup and login endpoints.
 type AuthResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
 	User    *User  `json:"user,omitempty"`
 }
 
+// handleSignup creates a user account from a JSON request body.
+//
+// Method: POST
+// Responses:
+// - 201: account created
+// - 400: invalid JSON or missing required fields
+// - 409: user already exists
+// - 500: server/database error
 func handleSignup(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeJSON(w, http.StatusMethodNotAllowed, AuthResponse{Success: false, Message: "use POST"})
@@ -184,11 +202,20 @@ func handleSignup(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// LoginRequest is the expected JSON payload for password-based login.
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
+// handleLogin authenticates a user by email and password.
+//
+// Method: POST
+// Responses:
+// - 200: authentication successful
+// - 400: invalid JSON
+// - 401: invalid credentials
+// - 405: unsupported HTTP method
 func handleLogin(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeJSON(w, http.StatusMethodNotAllowed, AuthResponse{Success: false, Message: "use POST"})
